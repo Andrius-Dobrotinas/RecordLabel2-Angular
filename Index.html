@@ -38,24 +38,24 @@
     <meta charset="utf-8" />
 </head>
 <body ng-app="RecordLabel">
-    <div class="container body-content">
-        <div>
-            <div ng-repeat="error in errors">
-                <div class="alert alert-danger" role="alert">
-                    <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    {{error.statusText}} ({{error.status}})
-                </div>
+<div class="container body-content ng-cloak">
+    <div>
+        <div ng-repeat="error in errors">
+            <div class="alert alert-danger" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign"></span>
+                {{error.statusText}} ({{error.status}})
             </div>
-            <div ng-show="infoMessage" class="alert alert-success">{{infoMessage}}</div>
-            <div ng-view></div>
         </div>
-        <hr />
+        <div ng-show="infoMessage" class="alert alert-success">{{infoMessage}}</div>
+        <div ng-view></div>
     </div>
-    <footer>
-        <p>&copy; 2016 - Record Label 2 by Andrew Dee</p>
-    </footer>
+    <hr />
+</div>
+<footer>
+    <p>&copy; 2017 - Record Label 2 by Andrew Dee</p>
+</footer>
 
-    <script src="Angular/node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="Angular/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="Angular/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="Angular/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

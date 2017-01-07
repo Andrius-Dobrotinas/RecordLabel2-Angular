@@ -202,16 +202,17 @@ a.default-text-style:active {
 
 /**********************/
 .label-container {
+    display: flex;
+}
+.label-container {
     padding-top: 5px !important;
 }
-
 .label-container .label,
 .label-container .label-wrap,
 .contains-labels .label,
 .contains-labels .label-wrap {
     margin-top: 5px;
 }
-
 
 a.label-wrap:not(.invert),
 a.label-wrap:not(.invert):hover,
