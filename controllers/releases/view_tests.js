@@ -30,7 +30,7 @@ describe("ReleaseViewCtrl Tests", function() {
 		routeParams = { id: 2 };
 
 		mockModel = sinon.stub({
-			release: null,
+			release: { id: 711, title: "The Ramones" },
 			youtubeReferences: [ { target: "https://youtube.com/asd" } ]
 		});
 		
@@ -83,8 +83,24 @@ describe("ReleaseViewCtrl Tests", function() {
 		promiseObj.resolve(mockModel);
 		rootScope.$apply();
 
-		expect(scope.model).toBe(mockModel);
+		expect(scope.model).toBe(mockModel.release);
 	});
+
+    it("must add youtubeReferences to scope.model", function() {
+        var promiseObj = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "get");
+
+        var ctrl = controllerConstructor("ReleaseViewCtrl", {
+            "$scope": scope, "$routeParams": routeParams,
+            "releasesService": releasesServiceMock,
+            "resourceErrorHandler": resourceErrorHandlerMock,
+            "referenceUrlTrustService": referenceUrlTrustService
+        });
+
+        promiseObj.resolve(mockModel);
+        rootScope.$apply();
+
+        expect(scope.model["youtubeReferences"]).toBe(mockModel.youtubeReferences);
+    });
 
 	it("must use referenceUrlTrustService for model.youtubeReferences when the property is trueish", function() {
 		var promiseObj = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "get");
