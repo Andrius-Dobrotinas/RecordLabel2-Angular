@@ -24,12 +24,14 @@
     <script src="Angular/services/state.svc.js"></script>
     <script src="Angular/services/reference-url-trust.svc.js"></script>
     <script src="Angular/services/form-validation.svc.js"></script>
+    <script src="Angular/services/auth.svc.js"></script>
     <script src="Angular/directives/load-screen/load-screen.js"></script>
     <script src="Angular/directives/loader-button/loader-button.js"></script>
     <script src="Angular/directives/modal-box/modal-box.js"></script>
     <script src="Angular/controllers/releases/list.js"></script>
     <script src="Angular/controllers/releases/view.js"></script>
     <script src="Angular/controllers/releases/edit.js"></script>
+    <script src="Angular/controllers/auth.ctrl.js"></script>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +39,23 @@
     <title>Record Label 2</title>
     <meta charset="utf-8" />
 </head>
-<body ng-app="RecordLabel">
+<body ng-app="RecordLabel" ng-cloak>
+
+<div ng-controller="AuthCtrl as ctrl">
+    <div ng-if="!ctrl.isGodMode()">
+        <div class="btn btn-default" ng-click="ctrl.initAuthentication()" ng-hide="ctrl.isAuthInitiated()">Log in</div>
+        <div ng-show="ctrl.isAuthInitiated()">
+            <input type="text" ng-model="model.username" placeholder="Enter your user name"/>
+            <input type="password" ng-model="model.password" placeholder="Enter your password"/>
+            <span class="btn btn-default" ng-click="ctrl.authenticate()">Log in</span>
+            <span ng-show="ctrl.getAuthError()" class="label label-danger">{{ctrl.getAuthError()}}</span>
+        </div>
+    </div>
+    <div ng-if="ctrl.isGodMode()">
+        <div class="btn btn-default" ng-click="ctrl.logout()">Log out</div>
+    </div>
+</div>
+
 <div class="container body-content ng-cloak">
     <div>
         <div ng-repeat="error in errors">

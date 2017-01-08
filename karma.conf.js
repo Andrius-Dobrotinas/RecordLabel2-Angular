@@ -23,8 +23,9 @@ module.exports = function(config) {
 	  'node_modules/jquery/dist/jquery.js',
       'test/*.js',
       'application.js',
-	  'controllers/releases/*.js',
-	  'directives/**/.js',
+      'controllers/*.js',
+	  'controllers/**/*.js',
+	  'directives/**/*.js',
       'services/*.js'
     ],
 
