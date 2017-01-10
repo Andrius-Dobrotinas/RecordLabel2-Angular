@@ -12,12 +12,7 @@
 
         return {
             authenticate: function(creds) {
-                var credsBase64 = btoa(creds.username + ":" + creds.password);
-                var headers = {
-                    "Authorization": "Basic " + credsBase64
-                };
-
-                var result = $http.post("/api/authentication/authenticate", null, { headers: headers })
+                $http.post("/api/authentication/authenticate", creds)
                     .then(function() {
                         godMode = true;
                         authError = undefined;

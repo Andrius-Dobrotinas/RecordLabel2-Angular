@@ -55,38 +55,14 @@ describe("authService Tests", function() {
             expect(spy.calledOnce).toBe(true);
         });
 
-        it("must pass Authentication header to $http.post", function() {
+        it("must pass credentials object $http.post", function() {
             var spy = sinon.spy(httpMock, "post");
 
             svc.authenticate(creds);
 
-            expect(spy.getCall(0).args[2]).toBeTruthy();
-            expect(spy.getCall(0).args[2].headers).toBeTruthy();
-            expect(spy.getCall(0).args[2].headers["Authorization"]).toBeTruthy();
+            expect(spy.getCall(0).args[1]).toEqual(creds);
         });
 
-        it("Authentication header passed to $http.post must contain Basic auth type", function() {
-            var spy = sinon.spy(httpMock, "post");
-
-            svc.authenticate(creds);
-
-            var authHeader = spy.getCall(0).args[2].headers["Authorization"];
-            expect(authHeader.indexOf("Basic")).toBe(0);
-        });
-
-        it("Authentication header passed to $http.post must contain proper base64 encoded username and password",
-            function() {
-                var spy = sinon.spy(httpMock, "post");
-
-                var credsBase64 = btoa(creds.username + ":" + creds.password);
-                var expectedAuthHeader = "Basic " + credsBase64;
-
-                svc.authenticate(creds);
-
-                var authHeader = spy.getCall(0).args[2].headers["Authorization"];
-
-                expect(authHeader).toEqual(expectedAuthHeader);
-            });
     });
 
     describe("handling response to authentication request", function(){

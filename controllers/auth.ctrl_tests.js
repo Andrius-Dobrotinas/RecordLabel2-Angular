@@ -69,14 +69,24 @@ describe("AuthCtrl Tests", function() {
             expect(functionSpy.calledOnce).toBe(true);
         });
 
-        it("must pass scope.model to authService.authenticate as argument", function() {
+        it("must pass a copy of scope.model to authService.authenticate as argument", function() {
             var functionSpy = sinon.spy(authServiceMock, "authenticate");
 
             var model = scope.model;
 
             ctrl.authenticate();
 
-            expect(functionSpy.getCall(0).args[0]).toBe(model);
+            expect(functionSpy.getCall(0).args[0]).toEqual(model);
+        });
+
+        it("argument passed to authService.authenticate must not be scope.model", function() {
+            var functionSpy = sinon.spy(authServiceMock, "authenticate");
+
+            var model = scope.model;
+
+            ctrl.authenticate();
+
+            expect(functionSpy.getCall(0).args[0]).not.toBe(model);
         });
     });
 

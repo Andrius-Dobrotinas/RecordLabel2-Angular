@@ -31,7 +31,11 @@
             };
 
             ctrl.authenticate = function() {
-                authService.authenticate($scope.model);
+                var creds = {
+                    username: $scope.model.username,
+                    password: $scope.model.password
+                };
+                authService.authenticate(creds);
                 $scope.model.password = undefined;
             };
 
