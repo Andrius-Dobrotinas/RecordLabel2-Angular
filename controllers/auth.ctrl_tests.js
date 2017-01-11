@@ -90,15 +90,43 @@ describe("AuthCtrl Tests", function() {
         });
     });
 
+    describe("isLoginButtonEnabled tests", function() {
+
+        it("isLoginButtonEnabled must indicate FALSE initially", function() {
+            expect(ctrl.isLoginButtonEnabled()).toBe(false);
+        });
+
+        it("isLoginButtonEnabled must indicate FALSE when only username is entered", function() {
+            scope.model.username = "asd";
+            expect(ctrl.isLoginButtonEnabled()).toBe(false);
+        });
+
+        it("isLoginButtonEnabled must indicate FALSE when only password is entered", function() {
+            scope.model.password = "pwd";
+            expect(ctrl.isLoginButtonEnabled()).toBe(false);
+        });
+
+        it("isLoginButtonEnabled must indicate TRUE when both username and password are entered", function() {
+            scope.model.username = "asd";
+            scope.model.password = "pwd";
+            expect(ctrl.isLoginButtonEnabled()).toBe(true);
+        });
+    });
+
     it("initAuth must change authInitiated to TRUE", function() {
         ctrl.initAuthentication();
 
         expect(ctrl.isAuthInitiated()).toBe(true);
     });
 
-    it("scope.model.password must be undefined after call to authenticate", function() {
-        var functionSpy = sinon.spy(authServiceMock, "authenticate");
+    it("scope.model.username must be set to UNDEFINED after call to authenticate", function() {
+        scope.model.username = "asd";
+        ctrl.authenticate();
 
+        expect(scope.model.username).toBe(undefined);
+    });
+
+    it("scope.model.password must be set to UNDEFINED after call to authenticate", function() {
         scope.model.password = "pwd";
         ctrl.authenticate();
 

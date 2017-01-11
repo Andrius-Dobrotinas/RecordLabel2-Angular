@@ -30,18 +30,22 @@
                 ctrl.authInitiated = true;
             };
 
+            ctrl.isLoginButtonEnabled = function() {
+                return !(!$scope.model.username || !$scope.model.password);
+            };
+
             ctrl.authenticate = function() {
                 var creds = {
                     username: $scope.model.username,
                     password: $scope.model.password
                 };
                 authService.authenticate(creds);
+                $scope.model.username = undefined;
                 $scope.model.password = undefined;
             };
 
             ctrl.logout = function() {
-                // TODO
-                alert("TODO!");
+                authService.endSession();
             };
 
     }])

@@ -28,6 +28,12 @@
                         }
                     });
             },
+            endSession: function() {
+                $http.post("/api/authentication/endsession")
+                    .finally(function() {
+                        godMode = false;
+                    })
+            },
             getAuthError: function() {
                 return authError;
             },
