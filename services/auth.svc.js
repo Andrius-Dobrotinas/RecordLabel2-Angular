@@ -3,22 +3,22 @@
 (function () {
 
     var application = angular.module("RecordLabel")
-        .factory("authService", ["$http", "$rootScope", function($http, $rootScope) {
+        .factory("authService", ["$http", function($http) {
 
         // TODO: check if there is an active session on application startup
 
-        var godMode = false;
+        var GodMode = false;
         var authError = undefined;
 
         return {
             authenticate: function(creds) {
                 $http.post("/api/authentication/authenticate", creds)
                     .then(function() {
-                        godMode = true;
+                        GodMode = true;
                         authError = undefined;
                     })
                     .catch(function(e) {
-                        godMode = false;
+                        GodMode = false;
                         if (e.status === 401) {
                             // TODO: see if there's a better way to handle this
                             authError = "Bad credentials";
@@ -31,14 +31,14 @@
             endSession: function() {
                 $http.post("/api/authentication/endsession")
                     .finally(function() {
-                        godMode = false;
+                        GodMode = false;
                     })
             },
             getAuthError: function() {
                 return authError;
             },
             isGodMode: function() {
-                return godMode;
+                return GodMode;
             }
         };
     }]);

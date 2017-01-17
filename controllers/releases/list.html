@@ -1,6 +1,6 @@
 ﻿<h1>Releases</h1>
 
-<div class="create-new-btn-container" ng-show="isAdminMode">
+<div class="create-new-btn-container" ng-show="ctrl.isGodMode()">
     <a href="#/Releases/New" class="btn btn-default">Create New</a>
 </div>
 <hr />
@@ -16,7 +16,7 @@
                     </a>
                     <div class="body">
                         <!--a directive?-->
-                        <div ng-show="isAdminMode">
+                        <div ng-show="ctrl.isGodMode()">
                             <div class="edit-btn-block">
                                 <div class="edit-btn-container glyphicon">
                                     <a href="#/Releases/Edit/{{model.id}}" class="glyphicon-pencil right-top-btn"></a>

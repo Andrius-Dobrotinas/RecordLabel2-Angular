@@ -72,7 +72,7 @@ describe("authService Tests", function() {
             svc = authService;
         }));
 
-        it("must set godMode to true on successful authentication", function() {
+        it("must set GodMode to true on successful authentication", function() {
             backend.when('POST', '/api/authentication/authenticate').respond(200);
 
             svc.authenticate(creds);
@@ -90,7 +90,7 @@ describe("authService Tests", function() {
             expect(svc.getAuthError()).toBe(undefined);
         });
 
-        it("must set godMode to false on 401 (failed auth)", function() {
+        it("must set GodMode to false on 401 (failed auth)", function() {
             backend.when('POST', '/api/authentication/authenticate').respond(401);
 
             svc.authenticate(creds);

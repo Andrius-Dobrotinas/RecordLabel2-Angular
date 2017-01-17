@@ -13,12 +13,14 @@
             .when("/Releases/New", {
                 templateUrl: "Angular/controllers/releases/edit.html",
                 controller: "ReleaseEditCtrl",
-                controllerAs: "ctrl"
+                controllerAs: "ctrl",
+                access: { GodModeOnly: true }
             })
             .when("/Releases/Edit/:id", {
                 templateUrl: "Angular/controllers/releases/edit.html",
                 controller: "ReleaseEditCtrl",
-                controllerAs: "ctrl"
+                controllerAs: "ctrl",
+                access: { GodModeOnly: true }
             })
             .when("/Releases/:id", {
                 templateUrl: "Angular/controllers/releases/view.html",

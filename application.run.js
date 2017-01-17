@@ -18,19 +18,20 @@
              // Synchronous call to get settings. Settings must be retrieved before any other requests are be made
              // because they contain ItemsPerPage param.
              $.ajax({
-             url: "api/settings/get",
-             async: false
+                 url: "api/settings/get",
+                 async: false
              }).done(function (data) {
              $rootScope.settings.itemsPerPage = data.itemsPerPage;
              });
 
+            // TODO: move this to a separate messages service or something
              $rootScope.$on('$locationChangeStart', function (event) {
-             $rootScope.errors.length = 0;
-             infoMsgSvc.changeLocation();
+                 if (event.defaultPrevented) {
+                     return;
+                 }
+                 $rootScope.errors.length = 0;
+                 infoMsgSvc.changeLocation();
              });
-
-             // TODO: temporary, until I implement the whole thing
-             $rootScope.isAdminMode = true;
         }]);
 
 })();

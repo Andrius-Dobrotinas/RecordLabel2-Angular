@@ -3,8 +3,8 @@
 (function () {
 
     angular.module("RecordLabel").controller("ReleaseListCtrl",
-        ["$scope", "releasesService", "batchedListServiceFactory",
-        function ReleaseListCtrl($scope, releasesService, batchedListServiceFactory) {
+        ["$scope", "releasesService", "batchedListServiceFactory", "authService",
+        function ReleaseListCtrl($scope, releasesService, batchedListServiceFactory, authService) {
             var ctrl = this;
 
             var svc = batchedListServiceFactory(releasesService, $scope.settings.itemsPerPage);
@@ -24,7 +24,11 @@
 
             ctrl.loadMore = function () {
                 svc.loadMore();
-            }
+            };
+
+            ctrl.isGodMode = function() {
+                return authService.isGodMode();
+            };
         }]);
 
 })();

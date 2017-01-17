@@ -7,7 +7,7 @@
         function ReleaseEditCtrl($scope, authService) {
             var ctrl = this;
 
-            ctrl.authInitiated = false;
+            var authInitiated = false;
 
             $scope.model = {
                 username : undefined,
@@ -15,7 +15,7 @@
             };
 
             ctrl.isAuthInitiated = function() {
-                return ctrl.authInitiated;
+                return authInitiated;
             };
 
             ctrl.getAuthError = function() {
@@ -27,7 +27,7 @@
             };
 
             ctrl.initAuthentication = function() {
-                ctrl.authInitiated = true;
+                authInitiated = true;
             };
 
             ctrl.isLoginButtonEnabled = function() {
