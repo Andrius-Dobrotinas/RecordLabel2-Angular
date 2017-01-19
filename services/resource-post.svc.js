@@ -2,8 +2,8 @@
 
 (function () {
 
-    angular.module("RecordLabel").factory("resourcePostSvc", ["$location", "$rootScope", "infoMsgSvc",
-        function ($location, $rootScope, infoMsgSvc) {
+    angular.module("RecordLabel").factory("resourcePostSvc", ["$location", "errorMessageSvc", "infoMsgSvc",
+        function ($location, errorMessageSvc, infoMsgSvc) {
 
             return function (promise, redirectTo, errorArray) {
                 promise.$promise.then(function () {
@@ -22,7 +22,7 @@
                         if (!e.statusText) {
                             e.statusText = "An error has been encountered while making a request to server";
                         }
-                        $rootScope.errors.push(e);
+                        errorMessageSvc.addError(e);
                     }
                 });
 

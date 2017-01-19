@@ -3,14 +3,13 @@
 (function () {
 
     angular.module("RecordLabel").controller("NavigationCtrl",
-        ["$rootScope", "authService",
-        function ReleaseEditCtrl($rootScope, authService) {
+        ["$rootScope", "authService", "errorMessageSvc",
+        function ($rootScope, authService, errorMessageSvc) {
 
             var checkRoute = function(event, route) {
                 if (route.access && route.access.GodModeOnly && !authService.isGodMode()) {
-                    $rootScope.errors.push({
-                        statusText: "You must log in in order to go there" }
-                    );
+                    errorMessageSvc.addError({
+                        statusText: "You must log in in order to go there" });
                     event.preventDefault();
                 }
             };

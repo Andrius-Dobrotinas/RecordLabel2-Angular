@@ -20,12 +20,11 @@
                     .catch(function(e) {
                         GodMode = false;
                         if (e.status === 401) {
-                            // TODO: see if there's a better way to handle this
-                            authError = "Bad credentials";
-                        } else {
-                            // TODO: implement a proper error message service
-                            //$rootScope.errors.push(e);
+                            e.statusText = "Bad credentials";
+                        } else if (e.statusText.length === 0) {
+                            e.statusText = "An unexpected error has been encountered";
                         }
+                        authError = e.statusText;
                     });
             },
             endSession: function() {

@@ -40,9 +40,10 @@ describe("AuthCtrl Tests", function() {
         it("getAuthError must return value returned by authService.getAuthError", function() {
             var functionSpy = sinon.spy(authServiceMock, "getAuthError");
 
+            var expected = authServiceMock.getAuthError();
             var value = ctrl.getAuthError();
 
-            expect(value).toEqual(authServiceMock.getAuthError());
+            expect(value).toEqual(expected);
         });
 
         it("isGodMode must call authService.isGodMode", function() {
@@ -56,9 +57,10 @@ describe("AuthCtrl Tests", function() {
         it("isGodMode must return value returned by authService.isGodMode", function() {
             var functionSpy = sinon.spy(authServiceMock, "isGodMode");
 
+            var expected = authServiceMock.isGodMode();
             var value = ctrl.isGodMode();
 
-            expect(value).toEqual(authServiceMock.isGodMode());
+            expect(value).toEqual(expected);
         });
 
         it("authenticate must call authService.authenticate", function() {

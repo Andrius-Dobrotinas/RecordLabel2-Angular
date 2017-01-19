@@ -1,7 +1,8 @@
 "use strict";
 
-describe("AuthCtrl Tests", function() {
+describe("NavigationCtrl Tests", function() {
     var rootScope, authServiceMock, ctrl, route;
+    var errorMessageSvcMock;
     var isGodModeFalse = function() { return false; };
     var isGodModeTrue = function() { return true; };
 
@@ -10,16 +11,18 @@ describe("AuthCtrl Tests", function() {
     beforeEach(inject(function($controller, $rootScope) {
         rootScope = $rootScope;
 
-        // TODO: get errors in order, move them into a separate service
-        rootScope.errors = [];
-
         authServiceMock = {
             isGodMode: isGodModeFalse
+        };
+
+        errorMessageSvcMock = {
+            addError: function() {}
         };
 
         ctrl = $controller("NavigationCtrl", {
             "$rootScope": $rootScope,
             "authService": authServiceMock,
+            "errorMessageSvc": errorMessageSvcMock
         });
 
         route = {
@@ -37,7 +40,7 @@ describe("AuthCtrl Tests", function() {
 
         it("must check if in God mode", function() {
             spyOn(authServiceMock, "isGodMode");
-            var event = rootScope.$broadcast("$routeChangeStart", route);
+            rootScope.$broadcast("$routeChangeStart", route);
 
             expect(authServiceMock.isGodMode).toHaveBeenCalledTimes(1);
         });
@@ -49,9 +52,11 @@ describe("AuthCtrl Tests", function() {
         });
 
         it("must register an error message when not in God mode", function() {
-            var event = rootScope.$broadcast("$routeChangeStart", route);
+            spyOn(errorMessageSvcMock, "addError");
 
-            expect(rootScope.errors.length).toBe(1);
+            rootScope.$broadcast("$routeChangeStart", route);
+
+            expect(errorMessageSvcMock.addError).toHaveBeenCalledTimes(1);
         });
 
         it("must NOT prevent default behavior when in God mode", function() {
@@ -61,11 +66,13 @@ describe("AuthCtrl Tests", function() {
             expect(event.defaultPrevented).toBe(false);
         });
 
-        it("must NOT register an error message when in God mode", function() {
+        it("must NOT register any error messages when in God mode", function() {
+            spyOn(errorMessageSvcMock, "addError");
             authServiceMock.isGodMode = isGodModeTrue;
-            var event = rootScope.$broadcast("$routeChangeStart", route);
 
-            expect(rootScope.errors.length).toBe(0);
+            rootScope.$broadcast("$routeChangeStart", route);
+
+            expect(errorMessageSvcMock.addError).not.toHaveBeenCalled();
         });
     });
 
@@ -89,9 +96,10 @@ describe("AuthCtrl Tests", function() {
         });
 
         it("must NOT register any error messages", function() {
+            spyOn(errorMessageSvcMock, "addError");
             var event = rootScope.$broadcast("$routeChangeStart", route);
 
-            expect(rootScope.errors.length).toBe(0);
+            expect(errorMessageSvcMock.addError).not.toHaveBeenCalled();
         });
     });
 

@@ -25,6 +25,7 @@
     <script src="Angular/services/reference-url-trust.svc.js"></script>
     <script src="Angular/services/form-validation.svc.js"></script>
     <script src="Angular/services/auth.svc.js"></script>
+    <script src="Angular/services/error-message.svc.js"></script>
     <script src="Angular/directives/load-screen/load-screen.js"></script>
     <script src="Angular/directives/loader-button/loader-button.js"></script>
     <script src="Angular/directives/modal-box/modal-box.js"></script>
@@ -33,6 +34,7 @@
     <script src="Angular/controllers/releases/view.js"></script>
     <script src="Angular/controllers/releases/edit.js"></script>
     <script src="Angular/controllers/auth.ctrl.js"></script>
+    <script src="Angular/controllers/messages.ctrl.js"></script>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,10 +85,12 @@
 
 <div class="container body-content ng-cloak">
     <div>
-        <div ng-repeat="error in errors">
-            <div class="alert alert-danger" role="alert">
-                <span class="glyphicon glyphicon-exclamation-sign"></span>
-                {{error.statusText}}<span ng-if="error.status">({{error.status}})</span>
+        <div ng-controller="MessagesCtrl as msg">
+            <div ng-repeat="error in msg.getErrors()">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign"></span>
+                    {{error.statusText}}<span ng-if="error.status">({{error.status}})</span>
+                </div>
             </div>
         </div>
         <div ng-show="infoMessage" class="alert alert-success">{{infoMessage}}</div>

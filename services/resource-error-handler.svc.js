@@ -2,13 +2,13 @@
 
 (function () {
 
-    angular.module("RecordLabel").factory("resourceErrorHandler", ["$rootScope", function ($rootScope) {
+    angular.module("RecordLabel").factory("resourceErrorHandler", ["errorMessageSvc", function (errorMessageSvc) {
         return function (promise) {
             promise.$promise.catch(function (e) {
                 if (!e.statusText) {
                     e.statusText = "An error has been encountered while making a request to server";
                 }
-                $rootScope.errors.push(e);
+                errorMessageSvc.addError(e);
             });
             return promise;
         };
