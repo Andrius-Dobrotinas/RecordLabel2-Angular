@@ -66,14 +66,16 @@ describe("authService Tests", function() {
     });
 
     describe("handling response to authentication request", function(){
+        var authUrl;
 
-        beforeEach(inject(function($httpBackend, authService) {
+        beforeEach(inject(function($httpBackend, authService, authenticationUrl) {
             backend = $httpBackend;
             svc = authService;
+            authUrl = authenticationUrl;
         }));
 
         it("must set GodMode to true on successful authentication", function() {
-            backend.when('POST', '/api/authentication/authenticate').respond(200);
+            backend.when('POST', authUrl).respond(200);
 
             svc.authenticate(creds);
             backend.flush();
@@ -82,7 +84,7 @@ describe("authService Tests", function() {
         });
 
         it("must set authError to undefined on successful authentication", function() {
-            backend.when('POST', '/api/authentication/authenticate').respond(200);
+            backend.when('POST', authUrl).respond(200);
 
             svc.authenticate(creds);
             backend.flush();
@@ -91,7 +93,7 @@ describe("authService Tests", function() {
         });
 
         it("must set GodMode to false on 401 (failed auth)", function() {
-            backend.when('POST', '/api/authentication/authenticate').respond(401);
+            backend.when('POST', authUrl).respond(401);
 
             svc.authenticate(creds);
             backend.flush();
@@ -100,7 +102,7 @@ describe("authService Tests", function() {
         });
 
         it("must set authError to 'Bad credentials' on 401 (failed auth)", function() {
-            backend.when('POST', '/api/authentication/authenticate').respond(401);
+            backend.when('POST', authUrl).respond(401);
 
             svc.authenticate(creds);
             backend.flush();

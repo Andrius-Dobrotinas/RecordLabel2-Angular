@@ -23,6 +23,7 @@ module.exports = function(config) {
 	  'node_modules/jquery/dist/jquery.js',
       'test/*.js',
       'application.js',
+      'application.constants.js',
       'controllers/*.js',
 	  'controllers/**/*.js',
 	  'directives/**/*.js',

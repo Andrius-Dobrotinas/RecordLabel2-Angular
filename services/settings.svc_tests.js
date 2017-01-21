@@ -29,11 +29,11 @@ describe("settingsService Tests", function() {
             expect(requests.length).toBe(1);
         });
 
-        it("make request to the right service", function() {
+        it("make request to the right service", inject(function(settingsUrl) {
             svc.getSettingsSync();
-            // TODO: move this to a constant
-            expect(requests[0].url).toBe("api/settings/get");
-        });
+
+            expect(requests[0].url).toBe(settingsUrl);
+        }));
 
         it("request must be synchronous", function() {
             svc.getSettingsSync();
@@ -58,22 +58,22 @@ describe("settingsService Tests", function() {
             server.restore();
         });
 
-        it("getItemsPerPage must return... default value initially", function() {
+        it("getItemsPerPage must return... default value initially", inject(function(itemsPerPageDefault) {
             var result = svc.getItemsPerPage();
-            expect(result).toBe(10); // TODO: probably use constants?
-        });
+            expect(result).toBe(itemsPerPageDefault);
+        }));
 
-        it("getItemsPerPage must return... the value of items per page received from the back end", function() {
+        it("getItemsPerPage must return... the value of items per page received from the back end", inject(function(settingsUrl) {
             var response = { itemsPerPage: 5 };
             var serializerResponse = JSON.stringify(response);
-            server.respondWith("GET", "api/settings/get",
+            server.respondWith("GET", settingsUrl,
                 [200, { "Content-Type": "application/json" }, serializerResponse]);
 
             svc.getSettingsSync();
 
             var result = svc.getItemsPerPage();
             expect(result).toBe(response.itemsPerPage);
-        });
+        }));
 
     });
 });
