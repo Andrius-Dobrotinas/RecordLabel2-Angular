@@ -2,8 +2,7 @@
 
 (function () {
 
-    var application = angular.module("RecordLabel")
-        .factory("authService", ["$http", function($http) {
+    angular.module("RecordLabel").factory("authService", ["$http", function($http) {
 
         // TODO: check if there is an active session on application startup
 

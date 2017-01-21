@@ -3,11 +3,11 @@
 (function () {
 
     angular.module("RecordLabel").controller("ReleaseListCtrl",
-        ["$scope", "releasesService", "batchedListServiceFactory", "authService",
-        function ReleaseListCtrl($scope, releasesService, batchedListServiceFactory, authService) {
+        ["$scope", "releasesService", "batchedListServiceFactory", "authService", "settingsService",
+        function ReleaseListCtrl($scope, releasesService, batchedListServiceFactory, authService, settingsService) {
             var ctrl = this;
 
-            var svc = batchedListServiceFactory(releasesService, $scope.settings.itemsPerPage);
+            var svc = batchedListServiceFactory(releasesService, settingsService.getItemsPerPage());
             svc.loadMore();
 
             ctrl.getEntries = function () {

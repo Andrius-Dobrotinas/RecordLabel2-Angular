@@ -1,19 +1,21 @@
 "use strict";
 
 describe("ReleaseListCtrl Tests", function() {
-    var controllerConstructor, scope, rootScope, q;
-    var batchedListSvcMock, batchedListServiceFactoryMock, releasesServiceMock, authServiceMock;
+    var controllerConstructor, scope, q;
+    var batchedListSvcMock, batchedListServiceFactoryMock, releasesServiceMock, authServiceMock, settingsServiceMock;
 
     beforeEach(module("RecordLabel"));
 
     beforeEach(inject(function($controller, $rootScope, $q) {
         controllerConstructor = $controller;
         scope = $rootScope.$new();
-        rootScope = $rootScope;
         q = $q;
 
-        scope.settings = {
-            itemsPerPage: undefined
+        settingsServiceMock = {
+            itemsPerPage: undefined,
+            getItemsPerPage: function() {
+                return this.itemsPerPage;
+            }
         };
 
         batchedListSvcMock = {
@@ -43,19 +45,19 @@ describe("ReleaseListCtrl Tests", function() {
         it("must invoke batchedListServiceFactory with releasesService and itemsPerPage from settings in the scope", function() {
             var factorySpy = sinon.spy(batchedListServiceFactoryMock);
 
-            var itemsPerPage = 5;
-            scope.settings.itemsPerPage = itemsPerPage;
+            settingsServiceMock.itemsPerPage = 5;
 
             var ctrl = controllerConstructor("ReleaseListCtrl", {
                 "$scope": scope,
                 "releasesService": releasesServiceMock,
-                "batchedListServiceFactory": factorySpy
+                "batchedListServiceFactory": factorySpy,
+                "settingsService": settingsServiceMock
             });
 
             expect(factorySpy.calledOnce).toBe(true);
             expect(factorySpy.getCall(0).args.length).toBe(2, "Must invoke batchedListSvc factory with two arguments");
             expect(factorySpy.getCall(0).args[0]).toBe(releasesServiceMock);
-            expect(factorySpy.getCall(0).args[1]).toBe(itemsPerPage);
+            expect(factorySpy.getCall(0).args[1]).toBe(settingsServiceMock.itemsPerPage);
         });
     });
 
