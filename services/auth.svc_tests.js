@@ -27,7 +27,7 @@ describe("authService Tests", function() {
         });
     });
 
-    describe("posting an authentication request", function(){
+    describe("posting authentication request", function(){
         var q, httpMock;
 
         beforeEach(module(function($provide) {
@@ -109,6 +109,65 @@ describe("authService Tests", function() {
 
             expect(svc.getAuthError()).toBe("Bad credentials");
         });
+    });
+
+    describe("checking state of authentication", function(){
+        var q, httpMock;
+
+        beforeEach(module(function($provide) {
+            httpMock = {
+                post: function(args) {
+                    this.postArgs = args;
+                    return q.defer().promise;
+                },
+                postArgs: undefined
+            };
+
+            $provide.factory('$http', function() { return httpMock });
+        }));
+
+        beforeEach(inject(function($q, authService) {
+            q = $q;
+            svc = authService;
+        }));
+
+        it("must post a request to server once", function() {
+            var spy = sinon.spy(httpMock, "post");
+
+            svc.checkAuthenticationState();
+
+            expect(spy.calledOnce).toBe(true);
+        });
+
+    });
+
+    describe("handling response to authentication request", function(){
+        var checkUrl;
+
+        beforeEach(inject(function($httpBackend, authService, checkAuthStateUrl) {
+            backend = $httpBackend;
+            svc = authService;
+            checkUrl = checkAuthStateUrl;
+        }));
+
+        it("must set GodMode to true when response is true", function() {
+            backend.when('POST', checkUrl).respond(true);
+
+            svc.checkAuthenticationState(creds);
+            backend.flush();
+
+            expect(svc.isGodMode()).toBe(true);
+        });
+
+        it("must set GodMode to false when response is false", function() {
+            backend.when('POST', checkUrl).respond(false);
+
+            svc.checkAuthenticationState(creds);
+            backend.flush();
+
+            expect(svc.isGodMode()).toBe(false);
+        });
+
     });
 
 });

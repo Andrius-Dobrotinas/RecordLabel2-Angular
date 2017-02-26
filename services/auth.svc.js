@@ -3,9 +3,8 @@
 (function () {
 
     angular.module("RecordLabel").factory("authService", ["$http", "authenticationUrl", "endSessionUrl",
-        function($http, authenticationUrl, endSessionUrl) {
-
-            // TODO: check if there is an active session on application startup
+        "checkAuthStateUrl",
+        function($http, authenticationUrl, endSessionUrl, checkAuthStateUrl) {
 
             var GodMode = false;
             var authError = undefined;
@@ -27,11 +26,17 @@
                             authError = e.statusText;
                         });
                 },
+                checkAuthenticationState: function() {
+                    $http.post(checkAuthStateUrl)
+                        .then(function(resp) {
+                            GodMode = resp.data;
+                        });
+                },
                 endSession: function() {
                     $http.post(endSessionUrl)
                         .finally(function() {
                             GodMode = false;
-                        })
+                        });
                 },
                 getAuthError: function() {
                     return authError;
