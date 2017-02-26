@@ -3,12 +3,13 @@
 (function () {
 
     angular.module("RecordLabel").controller("ReleaseEditCtrl",
-        ["$scope", "$routeParams", "releasesService", "artistsService", "mediaTypesService", "constantsService", "resourceErrorHandler",
-            "resourcePostSvc", "formValidationService",
+        ["$scope", "$routeParams", "releasesService", "artistsService", "mediaTypesService", "constantsService",
+            "resourceErrorHandler", "resourcePostSvc", "formValidationService", "errorMessageSvc",
         function ReleaseEditCtrl($scope, $routeParams, releasesService, artistsService, mediaTypesService, constantsService,
-                                 resourceErrorHandler, resourcePostSvc, formValidationService) {
+                                 resourceErrorHandler, resourcePostSvc, formValidationService, errorMessageSvc) {
             var ctrl = this;
-            ctrl.isNew = $routeParams.id ? false : true;
+            var id = $routeParams.id;
+            ctrl.isNew = id ? false : true;
 
             $scope.validationErrors = [];
             $scope.constants = resourceErrorHandler(constantsService.get());
@@ -24,7 +25,7 @@
 
             // Depending on the action (new or edit), get an existing model or a template
             if (!ctrl.isNew) {
-                $scope.model = resourceErrorHandler(releasesService.getForEdit({ id: $routeParams.id }));
+                $scope.model = resourceErrorHandler(releasesService.getForEdit({ id: id }));
             } else {
                 $scope.model = resourceErrorHandler(releasesService.getTemplate());
 
@@ -36,7 +37,7 @@
             }
 
             $scope.update = function (form) {
-                $scope.errors.length = 0;
+                errorMessageSvc.clearErrors();
 
                 if (form.$valid) {
                     $scope.validationErrors.length = 0;
@@ -47,7 +48,8 @@
                         resourcePostSvc(releasesService.update($scope.model), "/Releases", $scope.validationErrors);
                     }
                 } else {
-                    $scope.errors.push({ statusText: "Data cannot be submitted because there are validation errors!" });
+                    errorMessageSvc.addError(
+                        new RecordLabel.Error("Data cannot be submitted because there are validation errors!"));
 
                     // Mark fields as dirty so that the UI displayed messages for each
                     for (let field in form) {
@@ -82,7 +84,7 @@
             // Checks if a field is empty
             ctrl.isEmptyForRequired = function (formField) {
                 return formValidationService.isEmptyForRequired(formField);
-            }
+            };
         }]);
 
 })();
