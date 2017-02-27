@@ -7,96 +7,132 @@
     </div>
 
     <form name="releaseForm" novalidate class="row frame shadow-box default-padding">
-        <div class="form-group row">
-            <label for="title" class="control-label col-sm-2">Title</label>
-            <div class="col-sm-10">
-                <input type="text" name="title" id="title" class="form-control" ng-model="model.title" required />
-                <div ng-show="ctrl.isEmptyForRequired(releaseForm.title)" class="text-danger">Release Title is required</div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label for="title" class="control-label col-sm-2">Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="title" id="title" class="form-control" ng-model="model.title" required />
+                        <div ng-show="ctrl.isEmptyForRequired(releaseForm.title)" class="text-danger">Release Title is required</div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="date" class="control-label col-sm-2">Release Year</label>
+                    <div class="col-sm-10">
+                        <input type="number" name="date" id="date" class="form-control" ng-model="model.date" required
+                               min="{{constants.minDate}}" max="{{constants.maxDate}}" />
+                        <div ng-show="ctrl.isEmptyForRequired(releaseForm.date)" class="text-danger">Release Date is required</div>
+                        <div ng-show="ctrl.isInvalidForRequired(releaseForm.date)" class="text-danger">Release Date must be a valid year between {{constants.minDate}} and {{constants.maxDate}}</div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="artistId" class="control-label col-sm-2">Artist</label>
+                    <div class="col-sm-10">
+                        <select id="artistId" name="artistId" class="form-control" ng-model="model.artistId"
+                                ng-options="item.id as item.name for item in artists"
+                                required min="1">
+                            <option value="">Select one...</option>
+                        </select>
+                        <div ng-show="ctrl.isEmptyForRequired(releaseForm.artistId)" class="text-danger">Select an Artist</div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="catNumber" class="control-label col-sm-2">Catalogue Number</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="catNumber" id="catNumber" class="form-control" ng-model="model.catalogueNumber" required />
+                        <div ng-show="ctrl.isEmptyForRequired(releaseForm.catNumber)" class="text-danger">Release Catalogue number is required</div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="mediaId" class="control-label col-sm-2">Media</label>
+                    <div class="col-sm-10">
+                        <select id="mediaId" name="mediaId" class="form-control" ng-model="model.mediaId"
+                                ng-options="item.id as item.text for item in mediaTypes"
+                                required min="1">
+                            <option value="">Select one...</option>
+                        </select>
+                        <div ng-show="ctrl.isEmptyForRequired(releaseForm.mediaId)" class="text-danger">Select a Media type</div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="length" class="control-label col-sm-2">Length</label>
+                    <div class="col-sm-10">
+                        <input name="length" id="length" type="number" class="form-control" ng-model="model.length" required min="0"
+                               placeholder="Release length in minutes" />
+                        <div ng-show="ctrl.isEmptyForRequired(releaseForm.length)" class="text-danger">Release Length is required</div>
+                        <div ng-show="ctrl.isInvalidForRequired(releaseForm.length)" class="text-danger">Release Length must be a positive number</div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="printStatusId" class="control-label col-sm-2">Print Status</label>
+                    <div class="col-sm-10">
+                        <select id="printStatusId" name="printStatusId" class="form-control" ng-model="model.printStatus"
+                                ng-options="item.id as item.text for item in constants.printStatuses">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="text" class="control-label col-sm-2">Text</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="text" id="text" class="form-control" ng-model="model.text"
+                               placeholder="Some short description of release to be displayed in release list" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="metadataIds" class="control-label col-sm-2">Metadata</label>
+                    <div class="col-sm-10">
+                        <select multiple id="metadataIds" name="metadataIds" class="form-control" ng-model="model.metadataIds"
+                                ng-options="item.id as item.text for item in metadataList">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-10 col-sm-offset-2">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tracks" data-backdrop="static" data-keyboard="false">
+                            Edit Tracklist
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#references" data-backdrop="static" data-keyboard="false">
+                            Edit References
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <label for="date" class="control-label col-sm-2">Release Year</label>
-            <div class="col-sm-10">
-                <input type="number" name="date" id="date" class="form-control" ng-model="model.date" required 
-                       min="{{constants.minDate}}" max="{{constants.maxDate}}" />
-                <div ng-show="ctrl.isEmptyForRequired(releaseForm.date)" class="text-danger">Release Date is required</div>
-                <div ng-show="ctrl.isInvalidForRequired(releaseForm.date)" class="text-danger">Release Date must be a valid year between {{constants.minDate}} and {{constants.maxDate}}</div>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="artistId" class="control-label col-sm-2">Artist</label>
-            <div class="col-sm-10">
-                <select id="artistId" name="artistId" class="form-control" ng-model="model.artistId" 
-                        ng-options="item.id as item.name for item in artists"
-                        required min="1">
-                    <option value="">Select one...</option>
-                </select>
-                <div ng-show="ctrl.isEmptyForRequired(releaseForm.artistId)" class="text-danger">Select an Artist</div>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="catNumber" class="control-label col-sm-2">Catalogue Number</label>
-            <div class="col-sm-10">
-                <input type="text" name="catNumber" id="catNumber" class="form-control" ng-model="model.catalogueNumber" required />
-                <div ng-show="ctrl.isEmptyForRequired(releaseForm.catNumber)" class="text-danger">Release Catalogue number is required</div>
+
+            <div class="col-md-6">
+                <div ng-if="!ctrl.isNew">
+                    <span>Images</span>
+                    <div ng-controller="ReleaseImagesCtrl as img">
+                        <div>
+                            <button class="btn btn-default" ng-click="img.changeMode(false)">Images</button>
+                            <button class="btn btn-default" ng-click="img.changeMode(true)">Upload Images</button>
+                        </div>
+
+                        <div id="images" ng-if="!img.isUploadMode()">
+
+                        </div>
+
+                        <div id="uploadImages" ng-if="img.isUploadMode()">
+                            <div>
+                                <div ng-repeat="entry in img.filesToUpload">
+                                    <input type="file" accept="image/*" name="file" file-input destination="entry.file" />
+                                </div>
+                            </div>
+
+                            <button type="button" ng-click="img.addFile()" class="btn btn-default">Add</button>
+
+                            <div>
+                                <button type="button" ng-click="img.uploadFiles()" ng-show="img.anyFilesAdded()"
+                                        class="btn btn-success">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="mediaId" class="control-label col-sm-2">Media</label>
-            <div class="col-sm-10">
-                <select id="mediaId" name="mediaId" class="form-control" ng-model="model.mediaId" 
-                        ng-options="item.id as item.text for item in mediaTypes"
-                        required min="1">
-                    <option value="">Select one...</option>
-                </select>
-                <div ng-show="ctrl.isEmptyForRequired(releaseForm.mediaId)" class="text-danger">Select a Media type</div>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="length" class="control-label col-sm-2">Length</label>
-            <div class="col-sm-10">
-                <input name="length" id="length" type="number" class="form-control" ng-model="model.length" required min="0"
-                       placeholder="Release length in minutes" />
-                <div ng-show="ctrl.isEmptyForRequired(releaseForm.length)" class="text-danger">Release Length is required</div>
-                <div ng-show="ctrl.isInvalidForRequired(releaseForm.length)" class="text-danger">Release Length must be a positive number</div>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="printStatusId" class="control-label col-sm-2">Print Status</label>
-            <div class="col-sm-10">
-                <select id="printStatusId" name="printStatusId" class="form-control" ng-model="model.printStatus" 
-                        ng-options="item.id as item.text for item in constants.printStatuses">
-                </select>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="text" class="control-label col-sm-2">Text</label>
-            <div class="col-sm-10">
-                <input type="text" name="text" id="text" class="form-control" ng-model="model.text" 
-                       placeholder="Some short description of release to be displayed in release list" />
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <label for="metadataIds" class="control-label col-sm-2">Metadata</label>
-            <div class="col-sm-10">
-                <select multiple id="metadataIds" name="metadataIds" class="form-control" ng-model="model.metadataIds" 
-                        ng-options="item.id as item.text for item in metadataList">
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group row">            
-            <div class="col-sm-10 col-sm-offset-2">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tracks" data-backdrop="static" data-keyboard="false">
-                    Edit Tracklist
-                </button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#references" data-backdrop="static" data-keyboard="false">
-                    Edit References
-                </button>
-            </div>
-        </div>
 
         <!--Modals-->
 
