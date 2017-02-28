@@ -9,6 +9,7 @@
             var id = $routeParams.id;
 
             ctrl.filesToUpload = [];
+            ctrl.images = [];
 
             var uploadMode = false;
 
@@ -21,7 +22,7 @@
             };
 
             ctrl.anyFilesAdded = function() {
-                // TODO: It should check if any files have actually been selected
+                // TODO: It should check whether any files have actually been selected
                 return ctrl.filesToUpload.length > 0;
             };
 
@@ -36,13 +37,16 @@
                 var url = imagesUploadUrl + id;
 
                 filePostSvc.post(ctrl.filesToUpload, url,
-                    function(data) {
-                        // TODO
-
+                    function(response) {
+                        ctrl.images = ctrl.images.concat(response.data);
+                        ctrl.changeMode(false);
                     },
-                    function(data) {
-                        // TODO
-
+                    function(response) {
+                        /* TODO: implement proper extraction of error message from response
+                         particularly, Spring's "file too large" exception won't get handled
+                         properly here */
+                        errorMessageSvc.addError(
+                            new RecordLabel.Error(response.data.message, response.status));
                     });
             };
     }]);

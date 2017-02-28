@@ -104,27 +104,29 @@
             <div class="col-md-6">
                 <div ng-if="!ctrl.isNew">
                     <span>Images</span>
-                    <div ng-controller="ReleaseImagesCtrl as img">
+                    <div ng-controller="ReleaseImagesCtrl as imgCtrl">
                         <div>
-                            <button class="btn btn-default" ng-click="img.changeMode(false)">Images</button>
-                            <button class="btn btn-default" ng-click="img.changeMode(true)">Upload Images</button>
+                            <button class="btn btn-default" ng-click="imgCtrl.changeMode(false)">Images</button>
+                            <button class="btn btn-default" ng-click="imgCtrl.changeMode(true)">Upload Images</button>
                         </div>
 
-                        <div id="images" ng-if="!img.isUploadMode()">
-
+                        <div id="images" ng-if="!imgCtrl.isUploadMode()">
+                            <div ng-repeat="img in imgCtrl.images">
+                                <img src="{{img}}"> <!--Get the size of this thing in order-->
+                            </div>
                         </div>
 
-                        <div id="uploadImages" ng-if="img.isUploadMode()">
+                        <div id="uploadImages" ng-if="imgCtrl.isUploadMode()">
                             <div>
-                                <div ng-repeat="entry in img.filesToUpload">
+                                <div ng-repeat="entry in imgCtrl.filesToUpload">
                                     <input type="file" accept="image/*" name="file" file-input destination="entry.file" />
                                 </div>
                             </div>
 
-                            <button type="button" ng-click="img.addFile()" class="btn btn-default">Add</button>
+                            <button type="button" ng-click="imgCtrl.addFile()" class="btn btn-default">Add</button>
 
                             <div>
-                                <button type="button" ng-click="img.uploadFiles()" ng-show="img.anyFilesAdded()"
+                                <button type="button" ng-click="imgCtrl.uploadFiles()" ng-show="imgCtrl.anyFilesAdded()"
                                         class="btn btn-success">Upload</button>
                             </div>
                         </div>

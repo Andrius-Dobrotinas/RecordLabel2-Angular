@@ -11,18 +11,23 @@ describe("ReleaseImagesCtrl Tests", function() {
             id: "1"
         };
         errorMessageSvcMock = {
+            addError: function(e) {},
             clearErrors: function() {}
         };
         filePostSvcMock = {
             post: function() {}
         };
-        ctrl = $controller("ReleaseImagesCtrl", {
+        ctrl = createController($controller);
+    }));
+
+    function createController($controller) {
+        return $controller("ReleaseImagesCtrl", {
             "$routeParams": routeParamsMock,
             "errorMessageSvc": errorMessageSvcMock,
             "filePostSvc": filePostSvcMock,
             "imagesUploadUrl": imagesUploadUrl
         });
-    }));
+    }
 
     describe("initial state", function() {
 
@@ -32,6 +37,14 @@ describe("ReleaseImagesCtrl Tests", function() {
 
         it("filesToUpload must be an empty array", function() {
             expect(ctrl.filesToUpload.length).toBe(0);
+        });
+
+        it("images array must be an array", function() {
+            expect(ctrl.images instanceof Array).toBe(true);
+        });
+
+        it("images must be an empty array", function() {
+            expect(ctrl.images.length).toBe(0);
         });
 
         it("isUploadMode must be false", function() {
@@ -130,6 +143,70 @@ describe("ReleaseImagesCtrl Tests", function() {
             var fileArray = spy.getCall(0).args[1];
             expect(fileArray).toBe(expectedUrl);
         });
+
+    });
+
+    describe("after upload", function() {
+
+        it("on upload success, must add img urls to images array", inject(function($controller) {
+            var imgArray =  [ "url/img1", "url/img2" ];
+            var response = {
+                data: imgArray,
+                status: 400
+            };
+
+            filePostSvcMock = {
+                post: function(url, data, success, failure) {
+                    success(response);
+                }
+            };
+            ctrl = createController($controller);
+
+            ctrl.uploadFiles();
+
+            expect(ctrl.images).toEqual(imgArray);
+        }));
+
+        it("after upload success, mode must NOT upload", inject(function($controller) {
+            filePostSvcMock = {
+                post: function(url, data, success, failure) {
+                    success({ data: []});
+                }
+            };
+            ctrl = createController($controller);
+
+            ctrl.changeMode(true);
+
+            ctrl.uploadFiles();
+
+            expect(ctrl.isUploadMode()).toEqual(false);
+        }));
+
+        it("on upload failure, must add error to errorMessageSvc", inject(function($controller) {
+            var spy = sinon.spy(errorMessageSvcMock, "addError");
+
+            var response = {
+                data: {
+                    message: "error message"
+                },
+                status: 500
+            };
+
+            var expectedErrorObject = new RecordLabel.Error(response.data.message, response.status);
+
+            filePostSvcMock = {
+                post: function(url, data, success, failure) {
+                    failure(response);
+                }
+            };
+            ctrl = createController($controller);
+
+            ctrl.uploadFiles();
+
+            expect(spy.calledOnce).toBe(true);
+            expect(spy.getCall(0).args.length).toBe(1);
+            expect(spy.getCall(0).args[0]).toEqual(expectedErrorObject);
+        }));
 
     });
 
