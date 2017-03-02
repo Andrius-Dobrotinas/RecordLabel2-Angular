@@ -15,8 +15,7 @@
                     if (model.youtubeReferences) {
                         referenceUrlTrustService.trustUrls(model.youtubeReferences);
                     }
-                    $scope.model = model.release;
-                    $scope.model.youtubeReferences = model.youtubeReferences;
+                    $scope.model = model;
                 }
 
                 ctrl.isLoading = function () {
