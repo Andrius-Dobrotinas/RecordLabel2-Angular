@@ -3,33 +3,51 @@
 (function () {
 
     angular.module("RecordLabel").controller("ReleaseEditCtrl",
-        ["$scope", "$routeParams", "releasesService", "artistsService", "mediaTypesService", "constantsService",
-            "resourceErrorHandler", "resourcePostSvc", "formValidationService", "errorMessageSvc",
-        function ReleaseEditCtrl($scope, $routeParams, releasesService, artistsService, mediaTypesService, constantsService,
-                                 resourceErrorHandler, resourcePostSvc, formValidationService, errorMessageSvc) {
+        ["$scope", "$routeParams", "releasesService", "artistsService", "mediaTypesService",
+            "constantsService", "resourceErrorHandler", "resourcePostSvc",
+            "formValidationService", "errorMessageSvc", "storageSvc", "imagesResource",
+        function ReleaseEditCtrl($scope, $routeParams, releasesService, artistsService,
+                                 mediaTypesService, constantsService, resourceErrorHandler,
+                                 resourcePostSvc, formValidationService, errorMessageSvc,
+                                 storageSvc, imagesResource) {
             var ctrl = this;
             var id = $routeParams.id;
             ctrl.isNew = id ? false : true;
+
+            $scope.model;
 
             $scope.validationErrors = [];
             $scope.constants = resourceErrorHandler(constantsService.get());
             $scope.artists = resourceErrorHandler(artistsService.getList());
             $scope.mediaTypes = resourceErrorHandler(mediaTypesService.query());
+            var images;
 
-            $scope.model;
+            // Get images
+            if (!ctrl.isNew) {
+                images = resourceErrorHandler(imagesResource.query({id: id}));
+
+                images.$promise.then(function(images) {
+                    storageSvc.get(id, $scope)
+                        .addArray(images);
+                });
+            }
 
             ctrl.isLoading = function() {
-                return !($scope.model.$resolved && $scope.constants.$resolved
-                        && $scope.artists.$resolved && $scope.mediaTypes.$resolved)
+                return !($scope.model.$resolved
+                    && $scope.constants.$resolved
+                    && $scope.artists.$resolved
+                    && $scope.mediaTypes.$resolved
+                    && (!images || images.$resolved));
             };
 
-            // Depending on the action (new or edit), get an existing model or a template
+            // Get an existing model or a template, depending on the action (new or edit),
             if (!ctrl.isNew) {
                 $scope.model = resourceErrorHandler(releasesService.getForEdit({ id: id }));
             } else {
                 $scope.model = resourceErrorHandler(releasesService.getTemplate());
 
-                // Set Release template Artist and MediaType Ids to null in order for Select element validations to work
+                // Set Release template Artist and MediaType Ids to null in order for
+                // Select element validations to work
                 $scope.model.$promise.then(function (data) {
                     data.artistId = null;
                     data.mediaId = null;
@@ -42,10 +60,12 @@
                 if (form.$valid) {
                     $scope.validationErrors.length = 0;
                     if (ctrl.isNew) {
-                        resourcePostSvc(releasesService.create($scope.model), "/Releases", $scope.validationErrors);
+                        resourcePostSvc(releasesService
+                            .create($scope.model), "/Releases", $scope.validationErrors);
                     }
                     else {
-                        resourcePostSvc(releasesService.update($scope.model), "/Releases", $scope.validationErrors);
+                        resourcePostSvc(releasesService
+                            .update($scope.model), "/Releases", $scope.validationErrors);
                     }
                 } else {
                     errorMessageSvc.addError(
@@ -76,12 +96,20 @@
                 $scope.model.tracks.splice(index, 1);
             };
 
-            // Checks if a field has an invalid NON-empty value
+            /**
+             * Checks if a field has an invalid NON-empty value
+             * @param formField
+             * @returns {boolean}
+             */
             ctrl.isInvalidForRequired = function (formField) {
                 return formValidationService.isInvalidForRequired(formField);
             };
 
-            // Checks if a field is empty
+            /**
+             * Checks if a field is empty
+             * @param formField
+             * @returns {boolean}
+             */
             ctrl.isEmptyForRequired = function (formField) {
                 return formValidationService.isEmptyForRequired(formField);
             };

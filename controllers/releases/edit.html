@@ -111,8 +111,13 @@
                         </div>
 
                         <div id="images" ng-if="!imgCtrl.isUploadMode()">
-                            <div ng-repeat="img in imgCtrl.images">
-                                <img src="{{img}}"> <!--Get the size of this thing in order-->
+                            <div ng-repeat="img in imgCtrl.getImages()" class="preview-img">
+                                <div class="edit-btn-block">
+                                    <div class="edit-btn-container glyphicon">
+                                        <a href="#/Releases/Edit/{{model.id}}" class="glyphicon-pencil right-top-btn"></a>
+                                    </div>
+                                </div>
+                                <img ng-src="{{img.fileName}}">
                             </div>
                         </div>
 

@@ -1,13 +1,14 @@
 
-var RecordLabel = {};
+var RecordLabel = RecordLabel || {};
 
 /**
  * Creates a new Error.
- * @class
+ * @constructor
+ * @classdesc represents an error with status text and, optionally, status code
  * @param {string} statusText error description
- * @param {int} status http error code
+ * @param {int=} status http error code
  */
-RecordLabel.Error = function(statusText, status) {
+RecordLabel.Error = function(statusText, statusCode) {
     this.statusText = statusText;
-    this.status = status;
+    this.status = statusCode;
 };

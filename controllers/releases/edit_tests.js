@@ -1,10 +1,16 @@
 "use strict";
 
 describe("ReleaseEditCtrl Tests", function() {
-    var controllerConstructor, scope, rootScope, q;
-    var routeParamsWithId, routeParamsEmpty, mockModel;
-    var resourceErrorHandlerMock, resourcePostSvcMock, constantsServiceMock,
-        releasesServiceMock, artistsServiceMock, mediaTypesServiceMock, releaseTemplate;
+    var controllerConstructor, scope, rootScope, q, routeParamsWithId,
+        routeParamsEmpty;
+
+    var resourceErrorHandlerMock, resourcePostSvcMock,
+        constantsServiceMock, releasesServiceMock, artistsServiceMock,
+        mediaTypesServiceMock, imagesResourceMock, releaseTemplate,
+        arrayStorageMock, storageSvcMock, formValidationServiceMock;
+
+    var constantsGetPromise, mediaTypesQueryPromise, artistsGetListPromise,
+        imagesQueryPromise, releasesGetForEditPromise, releasesGetTemplatePromise;
 
     beforeEach(module("RecordLabel"));
 
@@ -39,410 +45,492 @@ describe("ReleaseEditCtrl Tests", function() {
             query: function() {}
         };
 
+        imagesResourceMock = {
+            query: function() {}
+        };
+
+        arrayStorageMock = {
+            getAll: function() {},
+            addArray: function() {},
+            reset: function() {}
+        };
+
+        storageSvcMock = {
+            get: function() {
+                return arrayStorageMock;
+            }
+        };
+
+        formValidationServiceMock = {
+            isInvalidForRequired: function() {},
+            isEmptyForRequired: function() {}
+        };
+
         releaseTemplate = { artistId: 1, mediaId: 2 };
 
-        routeParamsWithId = { id: 1 };
+        routeParamsWithId = { id: "1" };
         routeParamsEmpty = {};
+
+        constantsGetPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
+        mediaTypesQueryPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
+        artistsGetListPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
+        releasesGetForEditPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
+        releasesGetTemplatePromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getTemplate");
+        imagesQueryPromise = TestUtilities.injectPromiseIntoServiceMock(q, imagesResourceMock, "query");
     }));
 
-    it("must call constantsService.get once", function() {
-        var serviceFunctionSpy = sinon.spy(constantsServiceMock, "get");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(serviceFunctionSpy.calledOnce).toBe(true);
-    });
-
-    it("must use resourceErrorHandler for constantsService.get", function() {
-        var resourceErrorHandlerMockSpy = sinon.spy(resourceErrorHandlerMock);
-
-        var promiseObj = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMockSpy,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(resourceErrorHandlerMockSpy.calledWith(promiseObj.promise)).toBe(true);
-        expect(scope.constants).toBe(promiseObj.promise, "constants variable must be assigned a value returned from the service");
-    });
-
-    it("must call mediaTypesService.query once", function() {
-        var serviceFunctionSpy = sinon.spy(mediaTypesServiceMock, "query");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(serviceFunctionSpy.calledOnce).toBe(true);
-    });
-
-    it("must use resourceErrorHandler for mediaTypesService.query", function() {
-        var resourceErrorHandlerMockSpy = sinon.spy(resourceErrorHandlerMock);
-
-        var promiseObj = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMockSpy,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(resourceErrorHandlerMockSpy.calledWith(promiseObj.promise)).toBe(true);
-        expect(scope.mediaTypes).toBe(promiseObj.promise, "mediaTypes variable must be assigned a value returned from the service");
-    });
-
-    it("must call artistsService.getList once", function() {
-        var serviceFunctionSpy = sinon.spy(artistsServiceMock, "getList");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(serviceFunctionSpy.calledOnce).toBe(true);
-    });
-
-    it("must use resourceErrorHandler for artistsService.getList", function() {
-        var resourceErrorHandlerMockSpy = sinon.spy(resourceErrorHandlerMock);
-
-        var promiseObj = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMockSpy,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(resourceErrorHandlerMockSpy.calledWith(promiseObj.promise)).toBe(true);
-        expect(scope.artists).toBe(promiseObj.promise, "artists variable must be assigned a value returned from the service");
-    });
-
-    it("must indicate NOT New when route params contain Id property with value", function() {
-        TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getTemplate");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(ctrl.isNew).toBe(false);
-    });
-
-    it("must indicate New when route params don't contain Id property with value", function() {
-        TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getTemplate");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsEmpty,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(ctrl.isNew).toBe(true);
-    });
-
-    it("when creating New, must call releasesService.getTemplate once", function() {
-        TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getTemplate");
-        var serviceFunctionSpy = sinon.spy(releasesServiceMock, "getTemplate");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsEmpty,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(serviceFunctionSpy.calledOnce).toBe(true);
-    });
-
-    it("when editing existing, must call releasesService.getForEdit with object containing Id from route params", function() {
-        var params = { id: routeParamsWithId.id };
-
-        var promiseObj = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
-        var serviceFunctionSpy = sinon.spy(releasesServiceMock, "getForEdit");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(serviceFunctionSpy.calledOnce).toBe(true);
-        expect(serviceFunctionSpy.getCall(0).args[0]).toEqual(params);
-        expect(scope.model).toBe(promiseObj.promise, "model variable must be assigned a value returned from the service");
-    });
-
-
-    /** TODO: This test seems terribly wrong because it depends on the implementation of the ReleasesService...
-     * Maybe I should create a separate service that assigns artistId and mediaId null values and verify
-     * that it was called? Seems a bit overkill to write a SERVICE just for THAT...
+    /**
+     * Instantiates a controller with default mocks or optionally uses those
+     * supplied in the arguments object
      */
-    it("when creating New, must assign nulls to retrieved model's artistId and mediaId in order for " +
-        "Artist and MediaType Select element validations to work", inject(function($httpBackend, releasesService) {
+    function createController(argsObject) {
+        if (!argsObject) argsObject = {};
 
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsEmpty,
-            "releasesService": releasesService,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
+        return controllerConstructor("ReleaseEditCtrl",
+            {
+                "$scope": argsObject["$scope"]
+                    ? argsObject["$scope"] : scope,
 
-        $httpBackend.when('GET', '/api/releases/getTemplate').respond(releaseTemplate);
-        $httpBackend.flush();
+                "$routeParams": argsObject["$routeParams"]
+                    ? argsObject["$routeParams"] : routeParamsWithId,
 
-        expect(scope.model.artistId).toBe(null);
-        expect(scope.model.mediaId).toBe(null);
-    }));
+                "releasesService": argsObject["releasesService"]
+                    ? argsObject["releasesService"] : releasesServiceMock,
 
-    it("isLoading must indicate FALSE when all promises are resolved in case of EDIT", function() {
-        var constantsPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-        var artistsPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-        var mediaTypesPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-        var releasesPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
+                "artistsService": argsObject["artistsService"]
+                    ? argsObject["artistsService"] : artistsServiceMock,
 
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
+                "mediaTypesService": argsObject["mediaTypesService"]
+                    ? argsObject["mediaTypesService"] : mediaTypesServiceMock,
 
-        constantsPromise.resolve();
-        artistsPromise.resolve();
-        mediaTypesPromise.resolve();
-        releasesPromise.resolve();
+                "constantsService": argsObject["constantsService"]
+                    ? argsObject["constantsService"] : constantsServiceMock,
 
-        scope.$apply();
+                "resourceErrorHandler": argsObject["resourceErrorHandler"]
+                    ? argsObject["resourceErrorHandler"] : resourceErrorHandlerMock,
 
-        expect(ctrl.isLoading()).toBe(false);
-    });
+                "resourcePostSvc": argsObject["resourcePostSvc"]
+                    ? argsObject["resourcePostSvc"] : resourcePostSvcMock,
 
-    it("isLoading must indicate FALSE when all promises are resolved in case of NEW", function() {
-        var constantsPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-        var artistsPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-        var mediaTypesPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-        var releasesPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getTemplate");
+                "formValidationService": argsObject["formValidationService"]
+                    ? argsObject["formValidationService"] : formValidationServiceMock,
 
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsEmpty,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
+                "storageSvc": argsObject["storageSvc"]
+                    ? argsObject["storageSvc"] : storageSvcMock,
 
-        constantsPromise.resolve();
-        artistsPromise.resolve();
-        mediaTypesPromise.resolve();
-        releasesPromise.resolve(releaseTemplate);
+                "imagesResource": argsObject["imagesResource"]
+                    ? argsObject["imagesResource"] : imagesResourceMock
+            });
+    }
 
-        scope.$apply();
+    describe("on controller startup", function() {
 
-        expect(ctrl.isLoading()).toBe(false);
-    });
+        describe("always", function() {
 
-    it("isLoading must indicate TRUE when at least one promise is not resolved (releases)", function() {
-        var constantsPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-        var artistsPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-        var mediaTypesPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-        var releasesPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
+            it("must call constantsService.get once when editing", function() {
+                var serviceFunctionSpy = sinon.spy(constantsServiceMock, "get");
 
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
+                var ctrl = createController();
 
-        constantsPromise.resolve();
-        artistsPromise.resolve();
-        mediaTypesPromise.resolve();
-
-        scope.$apply();
-
-        expect(ctrl.isLoading()).toBe(true);
-    });
-
-    it("isLoading must indicate TRUE when at least one promise is not resolved (mediaTypes)", function() {
-        var constantsPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-        var artistsPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-        var mediaTypesPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-        var releasesPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        constantsPromise.resolve();
-        artistsPromise.resolve();
-        releasesPromise.resolve();
-
-        scope.$apply();
-
-        expect(ctrl.isLoading()).toBe(true);
-    });
-
-    it("isLoading must indicate TRUE when at least one promise is not resolved (artists)", function() {
-        var constantsPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-        var artistsPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-        var mediaTypesPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-        var releasesPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        constantsPromise.resolve();
-        mediaTypesPromise.resolve();
-        releasesPromise.resolve();
-
-        scope.$apply();
-
-        expect(ctrl.isLoading()).toBe(true);
-    });
-
-    it("isLoading must indicate TRUE when at least one promise is not resolved (constantsPromise)", function() {
-        var constantsPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-        var artistsPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-        var mediaTypesPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-        var releasesPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        artistsPromise.resolve();
-        mediaTypesPromise.resolve();
-        releasesPromise.resolve();
-
-        scope.$apply();
-
-        expect(ctrl.isLoading()).toBe(true);
-    });
-
-    it("isLoading must indicate TRUE when no promises are resolved", function() {
-        var constantsPromise = TestUtilities.injectPromiseIntoServiceMock(q, constantsServiceMock, "get");
-        var artistsPromise = TestUtilities.injectPromiseIntoServiceMock(q, artistsServiceMock, "getList");
-        var mediaTypesPromise = TestUtilities.injectPromiseIntoServiceMock(q, mediaTypesServiceMock, "query");
-        var releasesPromise = TestUtilities.injectPromiseIntoServiceMock(q, releasesServiceMock, "getForEdit");
-
-        var ctrl = controllerConstructor("ReleaseEditCtrl", {
-            "$scope": scope, "$routeParams": routeParamsWithId,
-            "releasesService": releasesServiceMock,
-            "artistsService": artistsServiceMock,
-            "mediaTypesService": mediaTypesServiceMock,
-            "constantsService": constantsServiceMock,
-            "resourceErrorHandler": resourceErrorHandlerMock,
-            "resourcePostSvc": resourcePostSvcMock
-        });
-
-        expect(ctrl.isLoading()).toBe(true);
-    });
-
-
-    describe("ReleaseEditCtrl FORM tests", function() {
-
-        var formValidationService;
-
-        beforeEach(function() {
-            formValidationService = {
-                isInvalidForRequired: function() {},
-                isEmptyForRequired: function() {}
-            };
-        });
-
-        it("isInvalidForRequired must invoke formValidationService.isInvalidForRequired with the passed in argument", function() {
-            var isInvalidForRequiredSpy = sinon.spy(formValidationService, "isInvalidForRequired");
-
-            var ctrl = controllerConstructor("ReleaseEditCtrl", {
-                "$scope": scope, "$routeParams": routeParamsWithId,
-                "releasesService": releasesServiceMock,
-                "artistsService": artistsServiceMock,
-                "mediaTypesService": mediaTypesServiceMock,
-                "constantsService": constantsServiceMock,
-                "resourceErrorHandler": resourceErrorHandlerMock,
-                "resourcePostSvc": resourcePostSvcMock,
-                "formValidationService": formValidationService
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
             });
 
-            var formField = { value: "Slayer"};
+            it("must call constantsService.get once when creating new", function() {
+                var serviceFunctionSpy = sinon.spy(constantsServiceMock, "get");
+
+                var ctrl = createController({ $routeParams: routeParamsEmpty });
+
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
+            });
+
+            it("must use resourceErrorHandler for constantsService.get", function() {
+                var resourceErrorHandlerMockSpy = sinon.spy(resourceErrorHandlerMock);
+
+                var ctrl = createController( {
+                    resourceErrorHandler: resourceErrorHandlerMockSpy });
+
+                expect(resourceErrorHandlerMockSpy
+                    .calledWith(constantsGetPromise.promise)).toBe(true);
+                expect(scope.constants).toBe(constantsGetPromise.promise,
+                    "constants variable must be assigned a value returned from the service");
+            });
+
+            it("must call mediaTypesService.query once when editing", function() {
+                var serviceFunctionSpy = sinon.spy(mediaTypesServiceMock, "query");
+
+                var ctrl = createController();
+
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
+            });
+
+            it("must call mediaTypesService.query once when creating new", function() {
+                var serviceFunctionSpy = sinon.spy(mediaTypesServiceMock, "query");
+
+                var ctrl = createController({ $routeParams: routeParamsEmpty });
+
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
+            });
+
+            it("must use resourceErrorHandler for mediaTypesService.query", function() {
+                var resourceErrorHandlerMockSpy = sinon.spy(resourceErrorHandlerMock);
+
+                var ctrl = createController({
+                    resourceErrorHandler: resourceErrorHandlerMockSpy});
+
+                expect(resourceErrorHandlerMockSpy
+                    .calledWith(mediaTypesQueryPromise.promise)).toBe(true);
+                expect(scope.mediaTypes).toBe(mediaTypesQueryPromise.promise,
+                    "mediaTypes variable must be assigned a value returned from the service");
+            });
+
+            it("must call artistsService.getList once when editing", function() {
+                var serviceFunctionSpy = sinon.spy(artistsServiceMock, "getList");
+
+                var ctrl = createController();
+
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
+            });
+
+            it("must call artistsService.getList once creating new", function() {
+                var serviceFunctionSpy = sinon.spy(artistsServiceMock, "getList");
+
+                var ctrl = createController({ $routeParams: routeParamsEmpty });
+
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
+            });
+
+            it("must use resourceErrorHandler for artistsService.getList", function() {
+                var resourceErrorHandlerMockSpy = sinon.spy(resourceErrorHandlerMock);
+
+                var ctrl = createController({
+                    resourceErrorHandler: resourceErrorHandlerMockSpy});
+
+                expect(resourceErrorHandlerMockSpy
+                    .calledWith(artistsGetListPromise.promise)).toBe(true);
+                expect(scope.artists).toBe(artistsGetListPromise.promise,
+                    "artists variable must be assigned a value returned from the service");
+            });
+        });
+
+        describe("when creating New", function() {
+
+            it("must call releasesService.getTemplate once", function() {
+                var serviceFunctionSpy = sinon.spy(releasesServiceMock, "getTemplate");
+
+                var ctrl = createController({ $routeParams: routeParamsEmpty });
+
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
+            });
+
+            it("must NOT interact with imagesResource", function() {
+                var spy = sinon.spy(imagesResourceMock, "query");
+
+                var ctrl = createController({ $routeParams: routeParamsEmpty });
+
+                expect(spy.calledOnce).toBe(false);
+            });
+
+        });
+
+        describe("when Editing", function() {
+
+            it("must call releasesService.getForEdit with object containing Id from route params", function() {
+                var params = { id: routeParamsWithId.id };
+
+                var serviceFunctionSpy = sinon.spy(releasesServiceMock, "getForEdit");
+
+                var ctrl = createController();
+
+                expect(serviceFunctionSpy.calledOnce).toBe(true);
+                expect(serviceFunctionSpy.getCall(0).args[0]).toEqual(params);
+                expect(scope.model).toBe(releasesGetForEditPromise.promise,
+                    "model variable must be assigned a value returned from the service");
+            });
+
+            /**
+             * TODO: This test seems terribly wrong because it depends on the implementation of
+             * ReleasesService... Maybe I should create a separate service that assigns artistId
+             * and mediaId null values and verify that it was called? Seems a bit overkill to
+             * write a SERVICE just for THAT...
+             *
+             * The problem with testing this is that when data is modified in "then", it is assigned
+             * to whatever that promise is assigned to. Mocking this behavior appears to be not
+             * a simple task.
+             */
+            it("must assign nulls to retrieved model's artistId and mediaId " +
+                "in order for Artist and MediaType Select element validations to work",
+                inject(function($httpBackend, releasesService) {
+
+                    var ctrl = createController({
+                        $routeParams: routeParamsEmpty,
+                        releasesService: releasesService
+                    });
+
+                    // TODO: inject this url
+                    $httpBackend.when('GET', '/api/releases/getTemplate')
+                        .respond(releaseTemplate);
+                    $httpBackend.flush();
+
+                    expect(scope.model.artistId).toBe(null);
+                    expect(scope.model.mediaId).toBe(null);
+                }));
+
+
+            describe("imagesResource", function() {
+
+                it("must get images via imagesResource.query", function() {
+                    var spy = sinon.spy(imagesResourceMock, "query");
+
+                    var ctrl = createController();
+
+                    expect(spy.calledOnce).toBe(true);
+                });
+
+                it("must use resourceErrorHandler for imagesResource.query", function() {
+                    var resourceErrorHandlerMockSpy = sinon.spy(resourceErrorHandlerMock);
+
+                    var ctrl = createController(
+                        { resourceErrorHandler: resourceErrorHandlerMockSpy });
+
+                    expect(resourceErrorHandlerMockSpy
+                        .calledWith(imagesQueryPromise.promise)).toBe(true);
+                });
+
+                describe("on success", function() {
+                    var ctrl, storageSvcGetSpy, arrayManagerAddArraySpy;
+                    var images;
+
+                    beforeEach(function() {
+                        images = [ "img1", "img2" ];
+                        storageSvcGetSpy = sinon.spy(storageSvcMock, "get");
+                        arrayManagerAddArraySpy = sinon.spy(arrayStorageMock, "addArray");
+
+                        var ctrl = createController();
+
+                        imagesQueryPromise.resolve(images);
+
+                        scope.$apply();
+                    });
+
+                    it("must get storage from storage service", function() {
+                        expect(storageSvcGetSpy.calledOnce).toEqual(true);
+                    });
+
+                    it("must pass two arguments to storageSvc.get", function() {
+                        expect(storageSvcGetSpy.getCall(0).args.length).toEqual(2);
+                    });
+
+                    it("must pass object id as first argument to storageSvc.get", function() {
+                        var param = routeParamsWithId.id;
+
+                        expect(storageSvcGetSpy.getCall(0).args[0]).toEqual(param);
+                    });
+
+                    it("must pass scope as second argument storageSvc.get", function() {
+                        expect(storageSvcGetSpy.getCall(0).args[1]).toBe(scope);
+                    });
+
+                    it("must add images to storage", function() {
+                        expect(arrayManagerAddArraySpy.calledOnce).toBe(true);
+                    });
+
+                    it("must place images from response to storage", function() {
+                        expect(arrayManagerAddArraySpy.getCall(0).args[0]).toBe(images);
+                    });
+                });
+
+            });
+
+        });
+
+    });
+
+    describe("getters", function() {
+
+        describe("isNew", function() {
+
+            it("must indicate NOT New when route params contain Id property with value", function() {
+                var ctrl = createController();
+
+                expect(ctrl.isNew).toBe(false);
+            });
+
+            it("must indicate New when route params don't contain Id property with value", function() {
+                var ctrl = createController({ $routeParams: routeParamsEmpty });
+
+                expect(ctrl.isNew).toBe(true);
+            });
+        });
+
+        describe("isLoading tests", function() {
+
+            describe("must indicate FALSE when...", function() {
+
+                it("...all promises are resolved in case of EDIT", function() {
+                    var ctrl = createController();
+
+                    constantsGetPromise.resolve();
+                    artistsGetListPromise.resolve();
+                    mediaTypesQueryPromise.resolve();
+
+                    releasesGetForEditPromise.resolve();
+                    imagesQueryPromise.resolve();
+
+                    scope.$apply();
+
+                    expect(ctrl.isLoading()).toBe(false);
+                });
+
+                it("...all promises are resolved in case of NEW", function() {
+                    var ctrl = createController({ $routeParams: routeParamsEmpty});
+
+                    constantsGetPromise.resolve();
+                    artistsGetListPromise.resolve();
+                    mediaTypesQueryPromise.resolve();
+
+                    releasesGetTemplatePromise.resolve(releaseTemplate);
+
+                    scope.$apply();
+
+                    expect(ctrl.isLoading()).toBe(false);
+                });
+            });
+
+            describe("must indicate TRUE when at least one promise is not resolved", function() {
+
+                var ctrl;
+
+                describe("when NOT isNew", function() {
+
+                    beforeEach(function() {
+                        ctrl = createController();
+                    });
+
+                    it("releases.getForEdit", function() {
+                        constantsGetPromise.resolve();
+                        artistsGetListPromise.resolve();
+                        mediaTypesQueryPromise.resolve();
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+
+                    it("mediaTypes.query", function() {
+                        var ctrl = createController();
+
+                        constantsGetPromise.resolve();
+                        artistsGetListPromise.resolve();
+                        releasesGetForEditPromise.resolve();
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+
+                    it("artists.getList", function() {
+                        var ctrl = createController();
+
+                        constantsGetPromise.resolve();
+                        mediaTypesQueryPromise.resolve();
+                        releasesGetForEditPromise.resolve();
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+
+                    it("constants.get", function() {
+                        var ctrl = createController();
+
+                        artistsGetListPromise.resolve();
+                        mediaTypesQueryPromise.resolve();
+                        releasesGetForEditPromise.resolve();
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+
+                    it("images.query)", function() {
+                        var ctrl = createController();
+
+                        artistsGetListPromise.resolve();
+                        mediaTypesQueryPromise.resolve();
+                        releasesGetForEditPromise.resolve();
+                        constantsGetPromise.resolve();
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+                });
+
+                describe("when isNew", function() {
+
+                    beforeEach(function() {
+                        ctrl = createController({ $routeParams: routeParamsEmpty});
+                    });
+
+                    it("mediaTypes.query", function() {
+                        constantsGetPromise.resolve();
+                        artistsGetListPromise.resolve();
+                        //releasesGetForEditPromise.resolve();
+                        releasesGetTemplatePromise.resolve(releaseTemplate);
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+
+                    it("artists.getList", function() {
+                        constantsGetPromise.resolve();
+                        mediaTypesQueryPromise.resolve();
+                        //releasesGetForEditPromise.resolve();
+                        releasesGetTemplatePromise.resolve(releaseTemplate);
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+
+                    it("constants.get", function() {
+                        artistsGetListPromise.resolve();
+                        mediaTypesQueryPromise.resolve();
+                        //releasesGetForEditPromise.resolve();
+                        releasesGetTemplatePromise.resolve(releaseTemplate);
+
+                        scope.$apply();
+
+                        expect(ctrl.isLoading()).toBe(true);
+                    });
+                });
+
+
+
+
+
+
+
+            });
+
+            it("must indicate TRUE when no promises are resolved", function() {
+                var ctrl = createController();
+
+                expect(ctrl.isLoading()).toBe(true);
+            });
+        });
+
+    });
+
+    describe("form tests", function() {
+
+        it("isInvalidForRequired must invoke formValidationService.isInvalidForRequired with the passed in argument", function() {
+            var isInvalidForRequiredSpy = sinon.spy(formValidationServiceMock, "isInvalidForRequired");
+            var formField = { value: "Slayer" };
+
+            var ctrl = createController();
+
             ctrl.isInvalidForRequired(formField);
 
             expect(isInvalidForRequiredSpy.calledOnce).toBe(true);
@@ -450,24 +538,16 @@ describe("ReleaseEditCtrl Tests", function() {
         });
 
         it("isEmptyForRequired must invoke formValidationService.isEmptyForRequired with the passed in argument", function() {
-            var isEmptyForRequiredSpy = sinon.spy(formValidationService, "isEmptyForRequired");
-
-            var ctrl = controllerConstructor("ReleaseEditCtrl", {
-                "$scope": scope, "$routeParams": routeParamsWithId,
-                "releasesService": releasesServiceMock,
-                "artistsService": artistsServiceMock,
-                "mediaTypesService": mediaTypesServiceMock,
-                "constantsService": constantsServiceMock,
-                "resourceErrorHandler": resourceErrorHandlerMock,
-                "resourcePostSvc": resourcePostSvcMock,
-                "formValidationService": formValidationService
-            });
-
+            var isEmptyForRequiredSpy = sinon.spy(formValidationServiceMock, "isEmptyForRequired");
             var formField = { value: "Slayer"};
+
+            var ctrl = createController();
+
             ctrl.isEmptyForRequired(formField);
 
             expect(isEmptyForRequiredSpy.calledOnce).toBe(true);
             expect(isEmptyForRequiredSpy.getCall(0).args[0]).toBe(formField);
         });
     });
+
 });

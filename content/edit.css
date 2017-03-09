@@ -1,0 +1,8 @@
+.preview-img {
+    max-height: 150px;
+    max-width: 150px;
+}
+.preview-img > img {
+    max-height: 100%;
+    max-width: 100%;
+}

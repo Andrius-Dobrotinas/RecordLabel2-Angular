@@ -38,4 +38,10 @@
         });
     }]);
 
+    application.factory("imagesResource", ["$resource", function ($resource) {
+        return $resource("/api/images/:act/:id", { id: "@id" }, {
+            query: { method: "GET", params: { act: "get" }, isArray: true }
+        });
+    }]);
+
 })();

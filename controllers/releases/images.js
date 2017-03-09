@@ -3,15 +3,19 @@
 (function() {
 
     angular.module("RecordLabel").controller("ReleaseImagesCtrl", ["$routeParams", "errorMessageSvc",
-        "filePostSvc", "imagesUploadUrl",
-        function ReleaseImagesCtrl($routeParams, errorMessageSvc, filePostSvc, imagesUploadUrl) {
+        "filePostSvc", "imagesUploadUrl", "storageSvc",
+        function ReleaseImagesCtrl($routeParams, errorMessageSvc, filePostSvc, imagesUploadUrl, storageSvc) {
             var ctrl = this;
             var id = $routeParams.id;
+            var uploadMode = false;
 
             ctrl.filesToUpload = [];
-            ctrl.images = [];
 
-            var uploadMode = false;
+            // TODO: replace ctrl.images with this storage thing
+            var imgStore = storageSvc.get(id);
+            ctrl.getImages = function() {
+                return imgStore.getAll();
+            };
 
             ctrl.isUploadMode = function() {
                 return uploadMode;
@@ -38,13 +42,14 @@
 
                 filePostSvc.post(ctrl.filesToUpload, url,
                     function(response) {
-                        ctrl.images = ctrl.images.concat(response.data);
+                        imgStore.addArray(response.data);
                         ctrl.changeMode(false);
+                        ctrl.filesToUpload.length = 0;
                     },
                     function(response) {
-                        /* TODO: implement proper extraction of error message from response
-                         particularly, Spring's "file too large" exception won't get handled
-                         properly here */
+                        // TODO: implement proper extraction of error message from response
+                        // particularly, Spring's "file too large" exception won't get handled
+                        // properly here
                         errorMessageSvc.addError(
                             new RecordLabel.Error(response.data.message, response.status));
                     });
