@@ -1,8 +1,24 @@
-.preview-img {
-    max-height: 150px;
-    max-width: 150px;
+.images-container {
+    padding-top: 20px;
 }
 .preview-img > img {
     max-height: 100%;
     max-width: 100%;
+}
+.preview-img-container {
+    padding-right: 0px;
+    padding-left: 0px;
+    height: 150px;
+    overflow: hidden;
+    cursor:pointer;
+}
+.preview-img-container:hover .edit-btn-block {
+    display: block;
+}
+.preview-img-container.active {
+    border-style: dotted;
+}
+.preview-img-container [name=thumb] {
+    position: absolute;
+    bottom: 0px;
 }

@@ -103,25 +103,36 @@
 
             <div class="col-md-6">
                 <div ng-if="!ctrl.isNew">
-                    <span>Images</span>
                     <div ng-controller="ReleaseImagesCtrl as imgCtrl">
-                        <div>
-                            <button class="btn btn-default" ng-click="imgCtrl.changeMode(false)">Images</button>
-                            <button class="btn btn-default" ng-click="imgCtrl.changeMode(true)">Upload Images</button>
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-default active" ng-click="imgCtrl.changeMode(false)">
+                            Images
+                            <input type="radio" name="imageAction" />
+                        </label>
+                            <label class="btn btn-primary" ng-click="imgCtrl.changeMode(true)">
+                                Upload Images
+                                <input type="radio" name="imageAction" />
+                            </label>
                         </div>
 
-                        <div id="images" ng-if="!imgCtrl.isUploadMode()">
-                            <div ng-repeat="img in imgCtrl.getImages()" class="preview-img">
-                                <div class="edit-btn-block">
-                                    <div class="edit-btn-container glyphicon">
-                                        <a href="#/Releases/Edit/{{model.id}}" class="glyphicon-pencil right-top-btn"></a>
+                        <div id="images" ng-hide="imgCtrl.isUploadMode()" class="images-container">
+                            <div ng-repeat="img in imgCtrl.getImages()" class="col-sm-4 preview-img-container">
+                                <div class="preview-img">
+                                    <div class="edit-btn-block">
+                                        <div class="edit-btn-container glyphicon">
+                                            <div class="glyphicon-remove right-top-btn" ng-click="imgCtrl.deleteImage(img.id)"></div>
+                                        </div>
                                     </div>
+                                    <img ng-src="{{img.fileName}}">
                                 </div>
-                                <img ng-src="{{img.fileName}}">
+                                <!--TODO-->
+                                <!--<div name="thumb">
+                                    Is Thumbnail
+                                </div>-->
                             </div>
                         </div>
 
-                        <div id="uploadImages" ng-if="imgCtrl.isUploadMode()">
+                        <div id="uploadImages" ng-show="imgCtrl.isUploadMode()" class="images-container">
                             <div>
                                 <div ng-repeat="entry in imgCtrl.filesToUpload">
                                     <input type="file" accept="image/*" name="file" file-input destination="entry.file" />

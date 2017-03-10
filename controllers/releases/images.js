@@ -54,5 +54,11 @@
                             new RecordLabel.Error(response.data.message, response.status));
                     });
             };
+
+            ctrl.deleteImage = function(id) {
+                if (confirm("Do you really want to delete this image?")) {
+                    // TODO
+                }
+            }
     }]);
 })();
