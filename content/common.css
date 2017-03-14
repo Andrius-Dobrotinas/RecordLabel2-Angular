@@ -119,11 +119,6 @@
     overflow: hidden;
 }
 
-.list-item > article,
-.thumb1 img {
-    height: 150px;
-}
-
 .list-item > article > .body {
     padding-left: 10px;
 }
@@ -263,10 +258,6 @@ a.label-wrap:active,
     margin-left: 0px !important;
 }
 
-.thumb1 img {
-    width: 150px;
-}
-
 /*GENERIC ONE-LINERS*/
 .hide-overflow {
     overflow: hidden;
@@ -361,4 +352,14 @@ footer > .container {
 
 .create-new-btn-container {
     margin-bottom: 20px;
+}
+
+.thumb1 {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+}
+
+.thumb1 > img {
+    height: 100%;
 }

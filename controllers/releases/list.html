@@ -10,9 +10,8 @@
         <div ng-repeat="model in ctrl.getEntries()" class="col-lg-4 col-sm-6 list-cell">
             <div class="list-item">
                 <article>
-                    <a href="#/Releases/{{model.id}}">
-                        <!--@Html.DisplayFor(model => model.Model.Cover, "Thumbnail", new { @class = "thumb1 album-cover-thumb" })-->
-                        Thumbnail<br>ToDo
+                    <a href="#/Releases/{{model.id}}" class="thumb1">
+                        <img ng-src="{{model.thumbnailUrl}}"/>
                     </a>
                     <div class="body">
                         <!--a directive?-->
