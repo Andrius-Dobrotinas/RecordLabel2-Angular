@@ -2,8 +2,10 @@
 
 (function () {
 
-    angular.module("RecordLabel").factory("resourcePostSvc", ["$location", "errorMessageSvc", "infoMsgSvc",
-        function ($location, errorMessageSvc, infoMsgSvc) {
+    angular.module("RecordLabel")
+        .factory("resourcePostSvc",
+            ["$location", "errorMessageSvc", "infoMsgSvc", "responseErrorExtractSvc",
+        function ($location, errorMessageSvc, infoMsgSvc, responseErrorExtractSvc) {
 
             return function (promise, redirectTo, errorArray) {
                 promise.$promise.then(function () {
@@ -19,10 +21,8 @@
                             });
                         }
                     } else {
-                        if (!e.statusText) {
-                            e.statusText = "An error has been encountered while making a request to server";
-                        }
-                        errorMessageSvc.addError(e);
+                        errorMessageSvc.addError(
+                            responseErrorExtractSvc.getError(e));
                     }
                 });
 

@@ -24,6 +24,8 @@
     <script src="Angular/services/resource-services.js"></script>
     <script src="Angular/services/resource-post.svc.js"></script>
     <script src="Angular/services/resource-error-handler.svc.js"></script>
+    <script src="Angular/components/response-error-extractor.js"></script>
+    <script src="Angular/services/response-error-extract.svc.js"></script>
     <script src="Angular/services/batched-list.svc.js"></script>
     <script src="Angular/services/info-msg.svc.js"></script>
     <script src="Angular/services/state.svc.js"></script>
@@ -97,7 +99,7 @@
             <div ng-repeat="error in msg.getErrors()">
                 <div class="alert alert-danger" role="alert">
                     <span class="glyphicon glyphicon-exclamation-sign"></span>
-                    {{error.statusText}}<span ng-if="error.status">({{error.status}})</span>
+                    {{error.statusText}} <span ng-if="error.status">({{error.status}})</span>
                 </div>
             </div>
         </div>

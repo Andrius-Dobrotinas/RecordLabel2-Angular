@@ -8,6 +8,7 @@
         .constant("authenticationUrl", "/api/authentication/authenticate")
         .constant("endSessionUrl", "/api/authentication/endsession")
         .constant("checkAuthStateUrl", "/api/authentication/isauthenticated")
-        .constant("imagesUploadUrl", "api/images/upload/");
+        .constant("defaultErrorMsg",
+            "An error has been encountered while making a request to server");
 
 })();
