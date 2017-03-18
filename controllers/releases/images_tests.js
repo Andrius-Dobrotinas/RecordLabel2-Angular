@@ -1,8 +1,9 @@
 "use strict";
 
 describe("ReleaseImagesCtrl Tests", function() {
-    var controllerConstructor, routeParamsMock, errorMessageSvcMock, filePostSvcMock,
-        imgStorageMock, storageSvcMock;
+    var controllerConstructor, routeParamsMock, errorMessageSvcMock,
+        filePostSvcMock, imgStorageMock, storageSvcMock,
+        responseErrorExtractSvcMock;
     var ctrl, imagesUploadUrl = "url/";
 
     beforeEach(module("RecordLabel"));
@@ -35,23 +36,33 @@ describe("ReleaseImagesCtrl Tests", function() {
             }
         };
 
+        responseErrorExtractSvcMock = {
+            getError: function() {
+
+            }
+        };
+
         ctrl = createController();
     }));
 
     /**
      * Creates controller with default mocks
      */
-    function createController() {
-        return controllerConstructor("ReleaseImagesCtrl",
-            {
-                "$routeParams": routeParamsMock,
-                "errorMessageSvc": errorMessageSvcMock,
-                "filePostSvc": filePostSvcMock,
-                "imagesUploadUrl": imagesUploadUrl,
-                "storageSvc": storageSvcMock
-            });
-    }
+    function createController(http) {
+        var args = {
+            "$routeParams": routeParamsMock,
+            "errorMessageSvc": errorMessageSvcMock,
+            "filePostSvc": filePostSvcMock,
+            "imagesUploadUrl": imagesUploadUrl,
+            "storageSvc": storageSvcMock,
+            "responseErrorExtractSvc": responseErrorExtractSvcMock
+        };
+        if (http) {
+            args["$http"] = http;
+        }
 
+        return controllerConstructor("ReleaseImagesCtrl", args);
+    }
 
     describe("on controller startup", function() {
 
@@ -166,10 +177,13 @@ describe("ReleaseImagesCtrl Tests", function() {
                 expect(filePostSvcMockPostSpy.calledOnce).toBe(true);
             });
 
-            it("must invoke uploadFiles on filePostSvc with at least two arguments", function() {
+            it("must invoke uploadFiles on filePostSvc with at least" +
+                " two arguments", function()
+            {
                 ctrl.uploadFiles();
 
-                expect(filePostSvcMockPostSpy.getCall(0).args.length).toBeGreaterThanOrEqual(2);
+                expect(filePostSvcMockPostSpy.getCall(0).args.length)
+                    .toBeGreaterThanOrEqual(2);
             });
 
             it("must pass file array to uploadFiles", function() {
@@ -179,6 +193,7 @@ describe("ReleaseImagesCtrl Tests", function() {
                 ctrl.uploadFiles();
 
                 var fileArray = filePostSvcMockPostSpy.getCall(0).args[0];
+
                 expect(fileArray).toBe(ctrl.filesToUpload);
             });
 
@@ -188,7 +203,114 @@ describe("ReleaseImagesCtrl Tests", function() {
                 ctrl.uploadFiles();
 
                 var fileArray = filePostSvcMockPostSpy.getCall(0).args[1];
+
                 expect(fileArray).toBe(expectedUrl);
+            });
+
+            describe("after file upload", function() {
+
+                describe("on successful upload", function() {
+
+                    var imgArray, response;
+
+                    beforeEach(function() {
+                        imgArray =  [
+                            { id: 1, url: "url/img1" },
+                            { id: 2, url: "url/img2" }
+                        ];
+                        response = {
+                            data: imgArray
+                        };
+
+                        filePostSvcMock = {
+                            post: function(url, data, success) {
+                                success(response);
+                            }
+                        };
+
+                        ctrl = createController();
+                    });
+
+                    it("must add images from response to imgStorage", function() {
+                        var imgStorageAddArraySpy = sinon.spy(imgStorageMock, "addArray");
+
+                        ctrl.uploadFiles();
+
+                        expect(imgStorageAddArraySpy.calledOnce).toEqual(true);
+                        expect(imgStorageAddArraySpy.getCall(0).args.length).toEqual(1);
+                        expect(imgStorageAddArraySpy.getCall(0).args[0]).toEqual(response.data);
+                    });
+
+                    it("must clear filesToUpload array", function() {
+                        ctrl.filesToUpload.push({ file: "file" });
+
+                        ctrl.uploadFiles();
+
+                        expect(ctrl.filesToUpload.length).toEqual(0);
+                    });
+
+                    it("mode must NOT equal UPLOAD", function() {
+                        ctrl.changeMode(true);
+
+                        ctrl.uploadFiles();
+
+                        expect(ctrl.isUploadMode()).toEqual(false);
+                    });
+                });
+
+                describe("on upload failure", function() {
+
+                    var response;
+
+                    beforeEach(function () {
+                        response = {
+                            msg: "msg"
+                        };
+
+                        filePostSvcMock = {
+                            post: function(url, data, success, failure) {
+                                failure(response);
+                            }
+                        };
+
+                        ctrl = createController();
+                    });
+
+                    it("must extract error from response via responseErrorExtractSvc", function() {
+                        var spy = sinon.spy(responseErrorExtractSvcMock, "getError");
+
+                        ctrl.uploadFiles();
+
+                        expect(spy.calledOnce).toBe(true);
+                        expect(spy.getCall(0).args.length).toBe(1);
+                        expect(spy.getCall(0).args[0]).toBe(response);
+                    });
+
+                    it("must invoke errorMessageSvc.addError", function() {
+                        var spy = sinon.spy(errorMessageSvcMock, "addError");
+
+                        ctrl.uploadFiles();
+
+                        expect(spy.calledOnce).toBe(true);
+                        expect(spy.getCall(0).args.length).toBe(1);
+                    });
+
+                    it("must add error returned by responseErrorExtractSvcMock" +
+                        " to errorMessageSvc", function()
+                    {
+                        var spy = sinon.spy(errorMessageSvcMock, "addError");
+
+                        var expectedMsg = { statusText: "great!" };
+                        responseErrorExtractSvcMock.getError = function() {
+                            return expectedMsg
+                        };
+
+                        ctrl.uploadFiles();
+
+                        expect(spy.getCall(0).args[0]).toBe(expectedMsg);
+                    });
+                });
+
             });
 
         });
@@ -202,89 +324,110 @@ describe("ReleaseImagesCtrl Tests", function() {
 
                 expect(spy.calledOnce).toBe(true);
             });
-        })
-
-    });
-
-
-    describe("after file upload", function() {
-
-        describe("on successful upload", function() {
-
-            var imgArray, response;
-
-            beforeEach(function() {
-                imgArray =  [
-                    { id: 1, url: "url/img1" },
-                    { id: 2, url: "url/img2" }
-                ];
-                response = {
-                    data: imgArray
-                };
-
-                filePostSvcMock = {
-                    post: function(url, data, success) {
-                        success(response);
-                    }
-                };
-
-                ctrl = createController();
-            });
-
-            it("must add images from response to imgStorage", function() {
-                var imgStorageAddArraySpy = sinon.spy(imgStorageMock, "addArray");
-
-                ctrl.uploadFiles();
-
-                expect(imgStorageAddArraySpy.calledOnce).toEqual(true);
-                expect(imgStorageAddArraySpy.getCall(0).args.length).toEqual(1);
-                expect(imgStorageAddArraySpy.getCall(0).args[0]).toEqual(response.data);
-            });
-
-            it("must clear filesToUpload array", function() {
-                ctrl.filesToUpload.push({ file: "file" });
-
-                ctrl.uploadFiles();
-
-                expect(ctrl.filesToUpload.length).toEqual(0);
-            });
-
-            it("mode must NOT equal UPLOAD", function() {
-                ctrl.changeMode(true);
-
-                ctrl.uploadFiles();
-
-                expect(ctrl.isUploadMode()).toEqual(false);
-            });
         });
 
-        describe("on upload failure", function() {
+        describe("setAsCover", function() {
 
-            it("must add error to errorMessageSvc", function() {
-                var spy = sinon.spy(errorMessageSvcMock, "addError");
+            var img, imgId, url;
 
-                var response = {
-                    data: {
-                        message: "error message"
-                    }
-                };
+            beforeEach(inject(function(setCoverUrl) {
+                imgId = 711;
+                img = { id: imgId };
+                url = setCoverUrl;
 
-                var expectedErrorObject =
-                    new RecordLabel.Error(response.data.message, response.status);
-
-                filePostSvcMock = {
-                    post: function(url, data, success, failure) {
-                        failure(response);
-                    }
-                };
                 ctrl = createController();
+            }));
 
-                ctrl.uploadFiles();
+            it("must clear error messages", function() {
+                var spy = sinon.spy(errorMessageSvcMock, "clearErrors");
+
+                ctrl.setAsCover(img);
 
                 expect(spy.calledOnce).toBe(true);
-                expect(spy.getCall(0).args.length).toBe(1);
-                expect(spy.getCall(0).args[0]).toEqual(expectedErrorObject);
             });
+
+            it("must post a request to covers services", inject(function($q) {
+                var httpMock = {
+                    post: function(args) {
+                        this.postArgs = args;
+                        return $q.defer().promise;
+                    },
+                };
+
+                var spy = sinon.spy(httpMock, "post");
+
+                ctrl = createController(httpMock);
+
+                ctrl.setAsCover(img);
+
+                expect(spy.calledOnce).toBe(true);
+            }));
+
+            it("on success, must set currentCoverId to the id of image " +
+                "that was passed in", inject(function($httpBackend)
+                {
+                    $httpBackend.when("POST", url)
+                        .respond("we're cool");
+
+                    ctrl.setAsCover(img);
+
+                    $httpBackend.flush();
+
+                    expect(ctrl.currentCoverId).toBe(imgId);
+                }));
+
+            describe("on failue", function() {
+
+                var backend;
+
+                beforeEach(inject(function($httpBackend) {
+                    backend = $httpBackend;
+
+                    backend.when("POST", url)
+                        .respond(500);
+                }));
+
+                it("must extract error from response via responseErrorExtractSvc",
+                    function()
+                {
+                    var spy = sinon.spy(responseErrorExtractSvcMock, "getError");
+
+                    ctrl.setAsCover(img);
+
+                    backend.flush();
+
+                    expect(spy.calledOnce).toBe(true);
+                });
+
+                it("must invoke errorMessageSvc.addError", function() {
+                    var spy = sinon.spy(errorMessageSvcMock, "addError");
+
+                    ctrl.setAsCover(img);
+
+                    backend.flush();
+
+                    expect(spy.calledOnce).toBe(true);
+                    expect(spy.getCall(0).args.length).toBe(1);
+                });
+
+                it("must add error returned by responseErrorExtractSvcMock" +
+                    " to errorMessageSvc", function()
+                {
+                    var spy = sinon.spy(errorMessageSvcMock, "addError");
+
+                    var expectedMsg = { statusText: "great!" };
+                    responseErrorExtractSvcMock.getError = function() {
+                        return expectedMsg
+                    };
+
+                    ctrl.setAsCover(img);
+
+                    backend.flush();
+
+                    expect(spy.getCall(0).args[0]).toBe(expectedMsg);
+                });
+            })
+
         });
 
     });

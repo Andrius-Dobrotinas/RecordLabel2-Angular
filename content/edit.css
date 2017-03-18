@@ -15,10 +15,14 @@
 .preview-img-container:hover .edit-btn-block {
     display: block;
 }
-.preview-img-container.active {
+.preview-img-container.selected {
     border-style: dotted;
 }
-.preview-img-container [name=thumb] {
+.preview-img-container > [name=isCover] {
     position: absolute;
     bottom: 0px;
+    margin: 5px;
+}
+.preview-img-container > [name=isCover] > .glyphicon {
+    padding-right: 5px;
 }

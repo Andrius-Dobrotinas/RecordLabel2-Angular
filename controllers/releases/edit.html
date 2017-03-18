@@ -116,7 +116,10 @@
                         </div>
 
                         <div id="images" ng-hide="imgCtrl.isUploadMode()" class="images-container">
-                            <div ng-repeat="img in imgCtrl.getImages()" class="col-sm-4 preview-img-container">
+                            <div ng-repeat="img in imgCtrl.getImages()" class="col-sm-4 preview-img-container"
+                                ng-class="{selected: imgCtrl.currentCoverId == img.id}"
+                                ng-click="imgCtrl.setAsCoverWithQuestion(img)">
+
                                 <div class="preview-img">
                                     <div class="edit-btn-block">
                                         <div class="edit-btn-container glyphicon">
@@ -125,10 +128,10 @@
                                     </div>
                                     <img ng-src="{{img.fileName}}">
                                 </div>
-                                <!--TODO-->
-                                <!--<div name="thumb">
-                                    Is Thumbnail
-                                </div>-->
+
+                                <div name="isCover" class="badge" ng-if="imgCtrl.currentCoverId == img.id">
+                                    <span class="glyphicon glyphicon-check"></span>Cover
+                                </div>
                             </div>
                         </div>
 
