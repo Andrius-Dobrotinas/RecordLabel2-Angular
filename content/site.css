@@ -27,6 +27,10 @@ body {
     max-height: 52px;
 }
 
+.navbar.navbar-default > .container{
+    background-color: rgb(34, 34, 34)
+}
+
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
 */

@@ -29,31 +29,12 @@
                         </header>
                         <div>
                             <span class="text-muted on-top versions-menu-trigger">
-                                <!--@(Model.OtherVersions.Count > 0 ? " badge" : "" )">-->
                                 {{model.media.name}}
-
-                                <!--@{
-                                    if (Model.OtherVersions.Count > 0)
-                                    {
-                                    <span class="versions-menu frame">
-                                        @Html.ActionLink($"{Model.Media.Name} ({Model.CatalogueNumber})", "View", new { id = Model.Id }, new { @class = "" })
-                                        @foreach (Release item in Model.OtherVersions)
-                                        {
-                                        @Html.ActionLink($"{item.Media.Name} ({item.CatalogueNumber})", "View", new { id = item.Id }, new { @class = "" })
-                                        }
-                                    </span>
-                                    }
-                                }-->
-
                             </span>
                             <span class="text-muted on-top">{{model.catalogueNumber}}</span>
                         </div>
                         <p class="summary">
-                            Some text here...
-                            <!--@if (String.IsNullOrWhiteSpace(Model.Text) == false)
-                            {
-                            @Html.ActionLink(Model.Text, "View", "Release", new { id = Model.Id }, new { @class = "default-text-style" })
-                            }-->
+                            TODO: Some text here...
                         </p>
                     </div>
                 </article>

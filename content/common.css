@@ -356,10 +356,14 @@ footer > .container {
 
 .thumb1 {
     width: 150px;
-    height: 150px;
     overflow: hidden;
 }
 
 .thumb1 > img {
     height: 100%;
+}
+
+.thumb1,
+.list-item .body {
+    height: 150px;
 }
