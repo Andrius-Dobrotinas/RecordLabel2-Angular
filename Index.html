@@ -75,12 +75,12 @@
                     <div ng-controller="AuthCtrl as ctrl">
                         <div ng-if="!ctrl.isGodMode()">
                             <div class="btn btn-default" ng-click="ctrl.initAuthentication()" ng-hide="ctrl.isAuthInitiated()">Log in</div>
-                            <div ng-show="ctrl.isAuthInitiated()" class="navbar-form navbar-left">
+                            <form ng-show="ctrl.isAuthInitiated()" class="navbar-form navbar-left" ng-submit="ctrl.authenticate()">
                                 <span ng-show="ctrl.getAuthError()" class="label label-danger">{{ctrl.getAuthError()}}</span>
                                 <input type="text" ng-model="model.username" class="form-control" placeholder="Enter your user name"/>
                                 <input type="password" ng-model="model.password" class="form-control" placeholder="Enter your password"/>
                                 <button class="btn btn-default" ng-disabled="!ctrl.isLoginButtonEnabled()" ng-click="ctrl.authenticate()">Log in</button>
-                            </div>
+                            </form>
                         </div>
                         <div ng-if="ctrl.isGodMode()">
                             <div class="btn btn-default" ng-click="ctrl.logout()">Log out</div>
