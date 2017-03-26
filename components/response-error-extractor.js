@@ -14,25 +14,24 @@ RecordLabel.ResponseErrorExtractor = function(defaultMessage) {
     this.getError = function(responseObject) {
         var message = defaultMsg;
 
-        if (responseObject.data
-            && typeof responseObject.data === "string"
-            && responseObject.data.length > 0)
-        {
-            message = responseObject.data;
+        if (responseObject.data) {
+            if (typeof responseObject.data === "string") {
+                if (responseObject.data.length > 0) {
+                    message = responseObject.data;
+                }
+            }
+            else if (responseObject.data.message
+                && typeof responseObject.data.message === "string"
+                && responseObject.data.message.length > 0) {
+                message = responseObject.data.message;
+            }
         }
-
-        if (responseObject.data.message
-            && typeof responseObject.data.message === "string"
-            && responseObject.data.message.length > 0)
-        {
-            message = responseObject.data.message;
-        }
-        if (responseObject.statusText
+        else if (responseObject.statusText
             && typeof responseObject.statusText === "string"
-            && responseObject.statusText.length > 0)
-        {
+            && responseObject.statusText.length > 0) {
             message = responseObject.statusText;
         }
+
         if (!message) {
             message = defaultMessage
         }

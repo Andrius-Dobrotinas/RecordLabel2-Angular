@@ -56,6 +56,20 @@ describe("ResponseErrorExtractor tests", function() {
         expect(result.statusText).toBe(defaultMsg);
     });
 
+    it ("must return default message if error message not found in response", function() {
+        responseObject.data = "";
+        var result = instance.getError(responseObject);
+
+        expect(result.statusText).toBe(defaultMsg);
+    });
+
+    it ("must return default message if error message not found in response", function() {
+        responseObject.data.message = "";
+        var result = instance.getError(responseObject);
+
+        expect(result.statusText).toBe(defaultMsg);
+    });
+
     it ("must return status from response.status", function() {
         var status = 500;
         responseObject.status = status;
