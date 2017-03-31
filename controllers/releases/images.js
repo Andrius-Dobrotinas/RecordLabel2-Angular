@@ -4,10 +4,10 @@
 
     angular.module("RecordLabel").controller("ReleaseImagesCtrl",
         ["$routeParams", "errorMessageSvc", "responseErrorExtractSvc",
-            "filePostSvc", "imagesUploadUrl", "storageSvc", "$http", "setCoverUrl",
+            "filePostSvc", "imagesUploadUrl", "arrayStorageSvc", "$http", "setCoverUrl",
         function ReleaseImagesCtrl($routeParams, errorMessageSvc,
                responseErrorExtractSvc, filePostSvc, imagesUploadUrl,
-               storageSvc, $http, setCoverUrl)
+                                   arrayStorageSvc, $http, setCoverUrl)
         {
             var ctrl = this;
             var id = $routeParams.id;
@@ -15,7 +15,7 @@
 
             ctrl.filesToUpload = [];
 
-            var imgStore = storageSvc.get(id);
+            var imgStore = arrayStorageSvc.get(id);
             ctrl.getImages = function() {
                 return imgStore.getAll();
             };

@@ -5,11 +5,11 @@
     angular.module("RecordLabel").controller("ReleaseEditCtrl",
         ["$scope", "$routeParams", "releasesService", "artistsService", "mediaTypesService",
             "constantsService", "resourceErrorHandler", "resourcePostSvc",
-            "formValidationService", "errorMessageSvc", "storageSvc", "imagesResource",
+            "formValidationService", "errorMessageSvc", "arrayStorageSvc", "imagesResource",
         function ReleaseEditCtrl($scope, $routeParams, releasesService, artistsService,
                                  mediaTypesService, constantsService, resourceErrorHandler,
                                  resourcePostSvc, formValidationService, errorMessageSvc,
-                                 storageSvc, imagesResource) {
+                                 arrayStorageSvc, imagesResource) {
             var ctrl = this;
             var id = $routeParams.id;
             ctrl.isNew = id ? false : true;
@@ -27,7 +27,7 @@
                 images = resourceErrorHandler(imagesResource.query({id: id}));
 
                 images.$promise.then(function(images) {
-                    storageSvc.get(id, $scope)
+                    arrayStorageSvc.get(id, $scope)
                         .addArray(images);
                 });
             }

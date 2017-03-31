@@ -7,7 +7,7 @@ describe("ReleaseEditCtrl Tests", function() {
     var resourceErrorHandlerMock, resourcePostSvcMock,
         constantsServiceMock, releasesServiceMock, artistsServiceMock,
         mediaTypesServiceMock, imagesResourceMock, releaseTemplate,
-        arrayStorageMock, storageSvcMock, formValidationServiceMock;
+        arrayStorageMock, arrayStorageSvcMock, formValidationServiceMock;
 
     var constantsGetPromise, mediaTypesQueryPromise, artistsGetListPromise,
         imagesQueryPromise, releasesGetForEditPromise, releasesGetTemplatePromise;
@@ -55,7 +55,7 @@ describe("ReleaseEditCtrl Tests", function() {
             reset: function() {}
         };
 
-        storageSvcMock = {
+        arrayStorageSvcMock = {
             get: function() {
                 return arrayStorageMock;
             }
@@ -115,8 +115,8 @@ describe("ReleaseEditCtrl Tests", function() {
                 "formValidationService": argsObject["formValidationService"]
                     ? argsObject["formValidationService"] : formValidationServiceMock,
 
-                "storageSvc": argsObject["storageSvc"]
-                    ? argsObject["storageSvc"] : storageSvcMock,
+                "arrayStorageSvc": argsObject["arrayStorageSvc"]
+                    ? argsObject["arrayStorageSvc"] : arrayStorageSvcMock,
 
                 "imagesResource": argsObject["imagesResource"]
                     ? argsObject["imagesResource"] : imagesResourceMock
@@ -297,12 +297,12 @@ describe("ReleaseEditCtrl Tests", function() {
                 });
 
                 describe("on success", function() {
-                    var ctrl, storageSvcGetSpy, arrayManagerAddArraySpy;
+                    var ctrl, arrayStorageSvcGetSpy, arrayManagerAddArraySpy;
                     var images;
 
                     beforeEach(function() {
                         images = [ "img1", "img2" ];
-                        storageSvcGetSpy = sinon.spy(storageSvcMock, "get");
+                        arrayStorageSvcGetSpy = sinon.spy(arrayStorageSvcMock, "get");
                         arrayManagerAddArraySpy = sinon.spy(arrayStorageMock, "addArray");
 
                         var ctrl = createController();
@@ -313,21 +313,21 @@ describe("ReleaseEditCtrl Tests", function() {
                     });
 
                     it("must get storage from storage service", function() {
-                        expect(storageSvcGetSpy.calledOnce).toEqual(true);
+                        expect(arrayStorageSvcGetSpy.calledOnce).toEqual(true);
                     });
 
-                    it("must pass two arguments to storageSvc.get", function() {
-                        expect(storageSvcGetSpy.getCall(0).args.length).toEqual(2);
+                    it("must pass two arguments to arrayStorageSvc.get", function() {
+                        expect(arrayStorageSvcGetSpy.getCall(0).args.length).toEqual(2);
                     });
 
-                    it("must pass object id as first argument to storageSvc.get", function() {
+                    it("must pass object id as first argument to arrayStorageSvc.get", function() {
                         var param = routeParamsWithId.id;
 
-                        expect(storageSvcGetSpy.getCall(0).args[0]).toEqual(param);
+                        expect(arrayStorageSvcGetSpy.getCall(0).args[0]).toEqual(param);
                     });
 
-                    it("must pass scope as second argument storageSvc.get", function() {
-                        expect(storageSvcGetSpy.getCall(0).args[1]).toBe(scope);
+                    it("must pass scope as second argument arrayStorageSvc.get", function() {
+                        expect(arrayStorageSvcGetSpy.getCall(0).args[1]).toBe(scope);
                     });
 
                     it("must add images to storage", function() {

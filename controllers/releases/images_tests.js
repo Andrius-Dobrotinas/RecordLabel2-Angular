@@ -2,7 +2,7 @@
 
 describe("ReleaseImagesCtrl Tests", function() {
     var controllerConstructor, routeParamsMock, errorMessageSvcMock,
-        filePostSvcMock, imgStorageMock, storageSvcMock,
+        filePostSvcMock, imgStorageMock, arrayStorageSvcMock,
         responseErrorExtractSvcMock;
     var ctrl, imagesUploadUrl = "url/";
 
@@ -30,7 +30,7 @@ describe("ReleaseImagesCtrl Tests", function() {
             reset: function() {}
         };
 
-        storageSvcMock = {
+        arrayStorageSvcMock = {
             get: function() {
                 return imgStorageMock;
             }
@@ -54,7 +54,7 @@ describe("ReleaseImagesCtrl Tests", function() {
             "errorMessageSvc": errorMessageSvcMock,
             "filePostSvc": filePostSvcMock,
             "imagesUploadUrl": imagesUploadUrl,
-            "storageSvc": storageSvcMock,
+            "arrayStorageSvc": arrayStorageSvcMock,
             "responseErrorExtractSvc": responseErrorExtractSvcMock
         };
         if (http) {
@@ -68,27 +68,27 @@ describe("ReleaseImagesCtrl Tests", function() {
 
         describe("image storage", function() {
 
-            var images, storageSvcGetSpy, imgStorageAddArraySpy;
+            var images, arrayStorageSvcGetSpy, imgStorageAddArraySpy;
 
             beforeEach(function() {
                 images = [ "img1", "img2" ];
-                storageSvcGetSpy = sinon.spy(storageSvcMock, "get");
+                arrayStorageSvcGetSpy = sinon.spy(arrayStorageSvcMock, "get");
                 imgStorageAddArraySpy = sinon.spy(imgStorageMock, "addArray");
                 ctrl = createController();
             });
 
             it("must get storage from storage service", function() {
-                expect(storageSvcGetSpy.calledOnce).toBe(true);
+                expect(arrayStorageSvcGetSpy.calledOnce).toBe(true);
             });
 
-            it("must pass one argument to storageSvc.get", function() {
-                expect(storageSvcGetSpy.getCall(0).args.length).toEqual(1);
+            it("must pass one argument to arrayStorageSvc.get", function() {
+                expect(arrayStorageSvcGetSpy.getCall(0).args.length).toEqual(1);
             });
 
-            it("must pass object id as first argument to storageSvc.get", function() {
+            it("must pass object id as first argument to arrayStorageSvc.get", function() {
                 var param = routeParamsMock.id;
 
-                expect(storageSvcGetSpy.getCall(0).args[0]).toEqual(param);
+                expect(arrayStorageSvcGetSpy.getCall(0).args[0]).toEqual(param);
             });
 
         });

@@ -1,14 +1,15 @@
 "use strict";
 
-describe("storageSvc tests", function() {
+describe("StorageManager tests", function() {
 
     beforeEach(module("RecordLabel"));
 
-    var svc;
+    var svc, mockFunction;
 
-    beforeEach(inject(function(storageSvc) {
-        svc = storageSvc;
-    }));
+    beforeEach(function() {
+        mockFunction = function() {};
+        svc = new RecordLabel.StorageManager(mockFunction);
+    });
 
     it ("must contain get method", function() {
         expect(svc.get).toBeTruthy();
@@ -20,10 +21,13 @@ describe("storageSvc tests", function() {
 
     describe("get method", function() {
 
-        it ("must create and return an instance of RecordLabel.ArrayStorage", function() {
+        it ("must create and return an instance of supplied function", function() {
+            mockFunction = sinon.spy();
+            svc = new RecordLabel.StorageManager(mockFunction);
+
             var store = svc.get("id");
 
-            expect(store instanceof RecordLabel.ArrayStorage).toBe(true);
+            expect(mockFunction.calledOnce).toBe(true);
         });
 
         it ("must add the instance to the store", function() {
