@@ -328,13 +328,13 @@ describe("ReleaseImagesCtrl Tests", function() {
 
         describe("setAsCover", function() {
 
-            var img, imgId, url;
+            var img, imgId, baseUrl, url;
 
             beforeEach(inject(function(setCoverUrl) {
                 imgId = 711;
                 img = { id: imgId };
-                url = setCoverUrl;
-
+                baseUrl = setCoverUrl;
+                url = baseUrl + "/" + imgId;
                 ctrl = createController();
             }));
 
@@ -363,7 +363,24 @@ describe("ReleaseImagesCtrl Tests", function() {
                 expect(spy.calledOnce).toBe(true);
             }));
 
-            it("on success, must set currentCoverId to the id of image " +
+            it("must post a request to covers services with image id as url parameter", inject(function($q) {
+                var httpMock = {
+                    post: function(args) {
+                        this.postArgs = args;
+                        return $q.defer().promise;
+                    },
+                };
+
+                var spy = sinon.spy(httpMock, "post");
+
+                ctrl = createController(httpMock);
+
+                ctrl.setAsCover(img);
+
+                expect(httpMock.postArgs).toEqual(url);
+            }));
+
+            /*it("on success, must set currentCoverId to the id of image " +
                 "that was passed in", inject(function($httpBackend)
                 {
                     $httpBackend.when("POST", url)
@@ -374,7 +391,7 @@ describe("ReleaseImagesCtrl Tests", function() {
                     $httpBackend.flush();
 
                     expect(ctrl.currentCoverId).toBe(imgId);
-                }));
+                }));*/
 
             describe("on failue", function() {
 

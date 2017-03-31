@@ -74,6 +74,8 @@
             };
 
             // TODO: set this to current cover value (if any)
+            // Probably create a service for storing key-value sort of thing
+            // so that two controllers could share values
             ctrl.currentCoverId = undefined;
 
             /**
@@ -83,16 +85,9 @@
             ctrl.setAsCover = function(img) {
                 errorMessageSvc.clearErrors();
 
+                var url = setCoverUrl + "/" + img.id;
                 $http
-                    .post(setCoverUrl
-                        // TODO: post object and image ids:
-                        // + "?objectId=" + id + "&imageId=" + img.id /*, {
-                      /*  objectId: +id,
-                        imageId: img.id
-                    }, {
-                        //transformRequest: angular.identity,
-                        headers: { 'Content-Type': "application/x-www-form-urlencoded" }
-                    }*/)
+                    .post(url)
                     .then(function() {
                         ctrl.currentCoverId = img.id;
                     })
