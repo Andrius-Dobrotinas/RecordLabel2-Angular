@@ -8,7 +8,7 @@
      */
     angular.module("RecordLabel").factory("arrayStorageSvc", function() {
 
-        return new RecordLabel.StorageInstanceManager(RecordLabel.ArrayStorage);
+        return new RecordLabel.StorageManager(RecordLabel.ArrayStorage);
 
     });
 
